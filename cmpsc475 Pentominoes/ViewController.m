@@ -12,10 +12,14 @@
 - (IBAction)BoardButtonPressed:(UIButton *)sender;
 - (IBAction)ResetPressed:(UIButton *)sender;
 - (IBAction)SolvePressed:(UIButton *)sender;
+@property (weak, nonatomic) IBOutlet UIImageView *Board;
 
 @end
 
 @implementation ViewController
+
+static NSString *kBoardImagePrefix = @"Board";
+static NSString *kBoardImageFileExtension = @"png";
 
 - (void)viewDidLoad
 {
@@ -30,6 +34,13 @@
 }
 
 - (IBAction)BoardButtonPressed:(UIButton *)sender {
+    NSInteger buttonTag = [sender tag];
+    NSString *boardFileName = [[NSString alloc] initWithFormat:@"%@%d", kBoardImagePrefix, buttonTag];
+    NSString *boardFilePath = [[NSBundle mainBundle] pathForResource:boardFileName
+                                                     ofType:kBoardImageFileExtension];
+    UIImage *newBoard = [[UIImage alloc] initWithContentsOfFile:boardFilePath];
+    
+    [self.Board setImage:newBoard];
 }
 
 - (IBAction)ResetPressed:(UIButton *)sender {

@@ -165,6 +165,9 @@
                             <constraint firstItem="CPd-0t-URr" firstAttribute="leading" secondItem="5" secondAttribute="leading" constant="20" symbolic="YES" type="default" id="v8W-4h-sv7"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="Board" destination="cYN-ek-h9x" id="YGw-Zk-AEj"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="3" sceneMemberID="firstResponder"/>
             </objects>
@@ -189,6 +192,7 @@
                 <relationship kind="action" name="BoardButtonPressed:" candidateClass="UIButton"/>
                 <relationship kind="action" name="ResetPressed:" candidateClass="UIButton"/>
                 <relationship kind="action" name="SolvePressed:" candidateClass="UIButton"/>
+                <relationship kind="outlet" name="Board" candidateClass="UIImageView"/>
             </relationships>
         </class>
     </classes>
