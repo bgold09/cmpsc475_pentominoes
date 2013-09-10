@@ -8,11 +8,14 @@
 
 #import "ViewController.h"
 
+#define kNumberBoardImages 6
+
 @interface ViewController ()
 - (IBAction)BoardButtonPressed:(UIButton *)sender;
 - (IBAction)ResetPressed:(UIButton *)sender;
 - (IBAction)SolvePressed:(UIButton *)sender;
 @property (weak, nonatomic) IBOutlet UIImageView *Board;
+@property (strong, nonatomic) NSArray *boardImages;
 
 @end
 
@@ -24,6 +27,7 @@ static NSString *kBoardImageFileExtension = @"png";
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    _boardImages = [self createBoardImages];
 	// Do any additional setup after loading the view, typically from a nib.
 }
 
@@ -35,11 +39,7 @@ static NSString *kBoardImageFileExtension = @"png";
 
 - (IBAction)BoardButtonPressed:(UIButton *)sender {
     NSInteger buttonTag = [sender tag];
-    NSString *boardFileName = [[NSString alloc] initWithFormat:@"%@%d", kBoardImagePrefix, buttonTag];
-    NSString *boardFilePath = [[NSBundle mainBundle] pathForResource:boardFileName
-                                                     ofType:kBoardImageFileExtension];
-    UIImage *newBoard = [[UIImage alloc] initWithContentsOfFile:boardFilePath];
-    
+    UIImage *newBoard = self.boardImages[buttonTag];
     [self.Board setImage:newBoard];
 }
 
@@ -48,4 +48,18 @@ static NSString *kBoardImageFileExtension = @"png";
 
 - (IBAction)SolvePressed:(UIButton *)sender {
 }
+                    
+- (NSArray *) createBoardImages {
+    NSMutableArray *newBoardImages = [[NSMutableArray alloc] init];
+    
+    for (NSInteger boardImageNumber = 0; boardImageNumber < kNumberBoardImages; boardImageNumber++) {
+        NSString *boardImageFileName = [[NSString alloc] initWithFormat:@"%@%d", kBoardImagePrefix, boardImageNumber];
+        NSString *boardImageFilePath = [[NSBundle mainBundle] pathForResource:boardImageFileName ofType:kBoardImageFileExtension];
+        UIImage *boardImage = [[UIImage alloc] initWithContentsOfFile:boardImageFilePath];
+        [newBoardImages addObject:boardImage];
+    }
+    
+    return newBoardImages;
+}
+
 @end
