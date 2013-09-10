@@ -11,11 +11,12 @@
 #define kNumberBoardImages 6
 
 @interface ViewController ()
+@property (weak, nonatomic) IBOutlet UIImageView *Board;
+@property (strong, nonatomic) NSArray *boardImages;
+@property NSInteger currentBoardNumber;
 - (IBAction)BoardButtonPressed:(UIButton *)sender;
 - (IBAction)ResetPressed:(UIButton *)sender;
 - (IBAction)SolvePressed:(UIButton *)sender;
-@property (weak, nonatomic) IBOutlet UIImageView *Board;
-@property (strong, nonatomic) NSArray *boardImages;
 
 @end
 
@@ -41,6 +42,7 @@ static NSString *kBoardImageFileExtension = @"png";
     NSInteger buttonTag = [sender tag];
     UIImage *newBoard = self.boardImages[buttonTag];
     [self.Board setImage:newBoard];
+    self.currentBoardNumber = buttonTag;
 }
 
 - (IBAction)ResetPressed:(UIButton *)sender {
@@ -51,10 +53,11 @@ static NSString *kBoardImageFileExtension = @"png";
                     
 - (NSArray *) createBoardImages {
     NSMutableArray *newBoardImages = [[NSMutableArray alloc] init];
+    NSBundle *bundle = [NSBundle mainBundle];
     
     for (NSInteger boardImageNumber = 0; boardImageNumber < kNumberBoardImages; boardImageNumber++) {
         NSString *boardImageFileName = [[NSString alloc] initWithFormat:@"%@%d", kBoardImagePrefix, boardImageNumber];
-        NSString *boardImageFilePath = [[NSBundle mainBundle] pathForResource:boardImageFileName ofType:kBoardImageFileExtension];
+        NSString *boardImageFilePath = [bundle pathForResource:boardImageFileName ofType:kBoardImageFileExtension];
         UIImage *boardImage = [[UIImage alloc] initWithContentsOfFile:boardImageFilePath];
         [newBoardImages addObject:boardImage];
     }
