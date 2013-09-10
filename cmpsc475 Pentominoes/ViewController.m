@@ -9,6 +9,9 @@
 #import "ViewController.h"
 
 @interface ViewController ()
+- (IBAction)BoardButtonPressed:(UIButton *)sender;
+- (IBAction)ResetPressed:(UIButton *)sender;
+- (IBAction)SolvePressed:(UIButton *)sender;
 
 @end
 
@@ -26,4 +29,12 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (IBAction)BoardButtonPressed:(UIButton *)sender {
+}
+
+- (IBAction)ResetPressed:(UIButton *)sender {
+}
+
+- (IBAction)SolvePressed:(UIButton *)sender {
+}
 @end
