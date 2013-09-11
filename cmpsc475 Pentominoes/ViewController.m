@@ -14,6 +14,7 @@
 #define kPlayingPieceVerticalPadding           120
 #define kPlayingPieceHorizontalPadding         20
 #define kPlayingPieceRightBoundPadding         75
+#define kBoardSquareSideLength                 30.0
 
 @interface ViewController ()
 @property (weak, nonatomic) IBOutlet UIImageView *board;
@@ -65,6 +66,59 @@ static NSString *kSolutionsFileExtention = @"plist";
 }
 
 - (IBAction)SolvePressed:(UIButton *)sender {
+    [self solveBoard:self.currentBoardNumber];
+}
+
+- (void) solveBoard:(NSInteger)boardNumber {
+    NSInteger solutionIndex = boardNumber - 1;
+    
+    // the blank puzzle has no solution
+    if (solutionIndex < 0) {
+        return;
+    }
+    
+    NSArray *tileNames = @[@"F", @"I", @"L", @"N", @"P", @"T", @"U", @"V", @"W", @"X", @"Y", @"Z"];
+    NSDictionary *solutionDictionary = self.solutions[solutionIndex];
+    
+    for (NSInteger i = 0; i < [tileNames count]; i++) {
+        NSString *tileName = tileNames[i];
+        NSDictionary *pieceSolution = [solutionDictionary objectForKey:tileName];
+        NSNumber *piecePositionX = (NSNumber *) [pieceSolution objectForKey:@"x"];
+        NSNumber *piecePositionY = (NSNumber *) [pieceSolution objectForKey:@"y"];
+        NSNumber *pieceRotations = (NSNumber *) [pieceSolution objectForKey:@"rotations"];
+        NSNumber *pieceFlips = (NSNumber *) [pieceSolution objectForKey:@"flips"];
+        
+        CGPoint solutionRelativeOrigin =
+            CGPointMake([piecePositionX floatValue] * kBoardSquareSideLength,
+                        [piecePositionY floatValue] * kBoardSquareSideLength);
+                
+        /* 
+         The dictionary for each tile contains coordinates x and y, 
+           plus the number of (clockwise) rotations and flips (along vertical axis). 
+         To convert these coordinates into origin coordinates on the board
+           you need to multiply each value by the length of the side of a square (30). 
+         Rotations should be performed before flips (these operations are not commutative).
+        */
+        
+        /*
+         Moving a piece from the main view to the board (and vice-versa) requires 
+           removing the piece from its current superview and adding it as a subview to its new view. 
+           Fortunately, the method - addSubview: automatically removes its argument from its superview (if it is already a subview). 
+         But, you must explicitly change the piece’s frame to use the new superview’s coordinate system.
+         You should use UIView’s -convertPoint:toView: method for this. 
+         Also remember that a view can be visible as a subview even if its frame 
+           is not within the bounds of its superview (unless the superview’s clipToBounds property is set to YES).
+        */
+        
+        UIView *playingPieceView = self.playingPieceImageViews[i];
+        CGSize playingPieceSize = playingPieceView.frame.size;
+        playingPieceView.frame = CGRectMake(solutionRelativeOrigin.x, solutionRelativeOrigin.y, playingPieceSize.width, playingPieceSize.height);
+
+        // rotate the piece
+        // flip the piece
+        
+        [self.board addSubview:playingPieceView];
+    }
 }
 
 - (void) switchBoards:(NSInteger)buttonTag {
