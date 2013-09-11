@@ -9,10 +9,11 @@
 #import "ViewController.h"
 
 #define kNumberBoardImages                     6
-#define kPlayingPieceInitialHorizontalPosition 50
+#define kPlayingPieceInitialHorizontalPosition 80
 #define kPlayingPieceInitialVerticalPadding    50
 #define kPlayingPieceVerticalPadding           120
 #define kPlayingPieceHorizontalPadding         20
+#define kPlayingPieceRightBoundPadding         75
 
 @interface ViewController ()
 @property (weak, nonatomic) IBOutlet UIImageView *board;
@@ -66,10 +67,8 @@ static NSString *kPlayingPieceImageFileExtension = @"png";
 
 - (void) placePlayingPiecesInStartPositions {
     CGRect viewFrame = self.view.frame;
-    CGFloat rightBound = viewFrame.origin.x + viewFrame.size.width;
-    CGSize boardSize = self.board.frame.size;
-    CGPoint boardOrigin = self.board.frame.origin;
-    CGFloat lowerBound = boardOrigin.y + boardSize.height;
+    CGFloat rightBound = viewFrame.origin.x + viewFrame.size.width - kPlayingPieceRightBoundPadding;
+    CGFloat lowerBound = self.board.frame.origin.y + self.board.frame.size.height;
     
     CGPoint currentOrigin =
         CGPointMake(kPlayingPieceInitialHorizontalPosition,
