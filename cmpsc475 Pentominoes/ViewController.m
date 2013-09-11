@@ -8,10 +8,14 @@
 
 #import "ViewController.h"
 
-#define kNumberBoardImages 6
+#define kNumberBoardImages                     6
+#define kPlayingPieceInitialHorizontalPosition 50
+#define kPlayingPieceInitialVerticalPadding    50
+#define kPlayingPieceVerticalPadding           120
+#define kPlayingPieceHorizontalPadding         20
 
 @interface ViewController ()
-@property (weak, nonatomic) IBOutlet UIImageView *Board;
+@property (weak, nonatomic) IBOutlet UIImageView *board;
 @property (strong, nonatomic) NSArray *boardImages;
 @property (strong, nonatomic) NSArray *playingPieceImageViews;
 @property NSInteger currentBoardNumber;
@@ -50,7 +54,7 @@ static NSString *kPlayingPieceImageFileExtension = @"png";
 - (IBAction)BoardButtonPressed:(UIButton *)sender {
     NSInteger buttonTag = [sender tag];
     UIImage *newBoard = self.boardImages[buttonTag];
-    [self.Board setImage:newBoard];
+    [self.board setImage:newBoard];
     self.currentBoardNumber = buttonTag;
 }
 
@@ -61,8 +65,29 @@ static NSString *kPlayingPieceImageFileExtension = @"png";
 }
 
 - (void) placePlayingPiecesInStartPositions {
+    CGRect viewFrame = self.view.frame;
+    CGFloat rightBound = viewFrame.origin.x + viewFrame.size.width;
+    CGSize boardSize = self.board.frame.size;
+    CGPoint boardOrigin = self.board.frame.origin;
+    CGFloat lowerBound = boardOrigin.y + boardSize.height;
+    
+    CGPoint currentOrigin =
+        CGPointMake(kPlayingPieceInitialHorizontalPosition,
+                    lowerBound + kPlayingPieceInitialVerticalPadding);
+    
     for (UIImageView *playingPiece in self.playingPieceImageViews) {
+        CGSize playingPieceSize = playingPiece.frame.size;
+        
+        // check if there is enough horizontal room to place the piece
+        if (currentOrigin.x + playingPieceSize.width > rightBound) {
+            currentOrigin.x = kPlayingPieceInitialHorizontalPosition;
+            currentOrigin.y += kPlayingPieceVerticalPadding;
+        }
+        
+        playingPiece.frame = CGRectMake(currentOrigin.x, currentOrigin.y, playingPieceSize.width, playingPieceSize.height);
         [self.view addSubview:playingPiece];
+        
+        currentOrigin.x += playingPieceSize.width + kPlayingPieceHorizontalPadding;
     }
 }
 
