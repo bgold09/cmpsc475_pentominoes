@@ -54,15 +54,19 @@ static NSString *kPlayingPieceImageFileExtension = @"png";
 
 - (IBAction)BoardButtonPressed:(UIButton *)sender {
     NSInteger buttonTag = [sender tag];
-    UIImage *newBoard = self.boardImages[buttonTag];
-    [self.board setImage:newBoard];
-    self.currentBoardNumber = buttonTag;
+    [self switchBoards:buttonTag];
 }
 
 - (IBAction)ResetPressed:(UIButton *)sender {
 }
 
 - (IBAction)SolvePressed:(UIButton *)sender {
+}
+
+- (void) switchBoards:(NSInteger)buttonTag {
+    UIImage *newBoard = self.boardImages[buttonTag];
+    [self.board setImage:newBoard];
+    self.currentBoardNumber = buttonTag;
 }
 
 - (void) placePlayingPiecesInStartPositions {
