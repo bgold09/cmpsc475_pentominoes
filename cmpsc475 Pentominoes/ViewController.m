@@ -8,7 +8,7 @@
 
 #import "ViewController.h"
 
-#define kNumberBoardImages   6
+#define kNumberBoardImages 6
 
 @interface ViewController ()
 @property (weak, nonatomic) IBOutlet UIImageView *Board;
@@ -68,12 +68,10 @@ static NSString *kPlayingPieceImageFileExtension = @"png";
 
 - (NSArray *) createBoardImages {
     NSMutableArray *newBoardImages = [[NSMutableArray alloc] init];
-    NSBundle *bundle = [NSBundle mainBundle];
     
     for (NSInteger boardImageNumber = 0; boardImageNumber < kNumberBoardImages; boardImageNumber++) {
-        NSString *boardImageFileName = [[NSString alloc] initWithFormat:@"%@%d", kBoardImagePrefix, boardImageNumber];
-        NSString *boardImageFilePath = [bundle pathForResource:boardImageFileName ofType:kBoardImageFileExtension];
-        UIImage *boardImage = [[UIImage alloc] initWithContentsOfFile:boardImageFilePath];
+        NSString *boardImageFileName = [[NSString alloc] initWithFormat:@"%@%d.%@", kBoardImagePrefix, boardImageNumber, kBoardImageFileExtension];
+        UIImage *boardImage = [UIImage imageNamed:boardImageFileName];
         [newBoardImages addObject:boardImage];
     }
     
