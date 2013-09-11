@@ -19,6 +19,7 @@
 @property (weak, nonatomic) IBOutlet UIImageView *board;
 @property (strong, nonatomic) NSArray *boardImages;
 @property (strong, nonatomic) NSArray *playingPieceImageViews;
+@property (strong, nonatomic) NSArray *solutions;
 @property NSInteger currentBoardNumber;
 - (IBAction)BoardButtonPressed:(UIButton *)sender;
 - (IBAction)ResetPressed:(UIButton *)sender;
@@ -32,12 +33,15 @@ static NSString *kBoardImagePrefix = @"Board";
 static NSString *kBoardImageFileExtension = @"png";
 static NSString *kPlayingPieceImagePrefix = @"tile";
 static NSString *kPlayingPieceImageFileExtension = @"png";
+static NSString *kSolutionsFileName = @"Solutions";
+static NSString *kSolutionsFileExtention = @"plist";
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     _boardImages = [self createBoardImages];
     _playingPieceImageViews = [self createPlayingPieceImageViews];
+    _solutions = [self loadSolutions];
 	// Do any additional setup after loading the view, typically from a nib.
 }
 
@@ -122,6 +126,12 @@ static NSString *kPlayingPieceImageFileExtension = @"png";
     }
     
     return playingPieces;
+}
+
+- (NSArray *) loadSolutions {
+    NSString *solutionsFilePath = [[NSBundle mainBundle] pathForResource:kSolutionsFileName ofType:kSolutionsFileExtention];
+    NSMutableArray *array = [[NSMutableArray alloc] initWithContentsOfFile:solutionsFilePath];    
+    return array;
 }
 
 @end
