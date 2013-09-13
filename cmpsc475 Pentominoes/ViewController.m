@@ -79,8 +79,17 @@ static NSString *kSolutionsFileExtention = @"plist";
 - (void) solveBoard:(NSInteger)boardNumber {
     NSInteger solutionIndex = boardNumber - 1;
     
-    // the blank puzzle has no solution
-    if (solutionIndex < 0 || self.solutionFound == YES) {
+    if (solutionIndex < 0) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"No Solution"
+                                                        message:@"The blank board has no solution!"
+                                                       delegate:nil
+                                              cancelButtonTitle:@"OK"
+                                              otherButtonTitles:nil];
+        [alert show];
+        return;
+    }
+    
+    if (self.solutionFound == YES) {
         return;
     }
     
