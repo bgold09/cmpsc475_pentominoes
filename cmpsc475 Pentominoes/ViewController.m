@@ -70,7 +70,9 @@ static NSString *kSolutionsFileExtention = @"plist";
 }
 
 - (IBAction)SolvePressed:(UIButton *)sender {
-    [self placePlayingPiecesInStartPositions];
+    if (self.solutionFound == NO) {
+        [self placePlayingPiecesInStartPositions];
+    }
     [self solveBoard:self.currentBoardNumber];
 }
 
@@ -149,18 +151,18 @@ static NSString *kSolutionsFileExtention = @"plist";
     
     for (UIImageView *playingPiece in self.playingPieceImageViews) {
         playingPiece.transform = CGAffineTransformIdentity;
-        CGSize playingPieceSize = playingPiece.frame.size;
         
         // check if there is enough horizontal room to place the piece
-        if (currentOrigin.x + playingPieceSize.width > rightBound) {
+        if (currentOrigin.x + playingPiece.frame.size.width > rightBound) {
             currentOrigin.x = kPlayingPieceInitialHorizontalPosition;
             currentOrigin.y += kPlayingPieceVerticalPadding;
         }
         
-        playingPiece.frame = CGRectMake(currentOrigin.x, currentOrigin.y, playingPieceSize.width, playingPieceSize.height);
+        playingPiece.frame =
+            CGRectMake(currentOrigin.x, currentOrigin.y, playingPiece.frame.size.width, playingPiece.frame.size.height);
         [self.view addSubview:playingPiece];
         
-        currentOrigin.x += playingPieceSize.width + kPlayingPieceHorizontalPadding;
+        currentOrigin.x += playingPiece.frame.size.width + kPlayingPieceHorizontalPadding;
     }
     
     [UIView commitAnimations];
@@ -168,7 +170,6 @@ static NSString *kSolutionsFileExtention = @"plist";
 
 - (NSArray *) createBoardImages {
     NSMutableArray *newBoardImages = [[NSMutableArray alloc] init];
-    
     for (NSInteger boardImageNumber = 0; boardImageNumber < kNumberBoardImages; boardImageNumber++) {
         NSString *boardImageFileName = [[NSString alloc] initWithFormat:@"%@%d.%@", kBoardImagePrefix, boardImageNumber, kBoardImageFileExtension];
         UIImage *boardImage = [UIImage imageNamed:boardImageFileName];
@@ -189,7 +190,6 @@ static NSString *kSolutionsFileExtention = @"plist";
         
         CGRect frame = CGRectMake(0.0, 0.0, playingPieceImage.size.width / 2, playingPieceImage.size.height / 2);
         playingPieceImageView.frame = frame;
-        
         [playingPieces addObject:playingPieceImageView];
     }
     
