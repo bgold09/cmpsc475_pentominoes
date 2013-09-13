@@ -109,10 +109,14 @@
                                     <action selector="BoardButtonPressed:" destination="2" eventType="touchUpInside" id="4WX-Lq-VI9"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="V1N-Mq-Kll">
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="V1N-Mq-Kll">
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="44" id="GIp-iX-4S9"/>
+                                    <constraint firstAttribute="width" constant="65" id="RyH-67-Cma"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="BradleyHandITCTT-Bold" family="Bradley Hand" pointSize="26"/>
                                 <state key="normal" title="Reset">
-                                    <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="titleColor" red="1" green="1" blue="0.40000000596046448" alpha="1" colorSpace="calibratedRGB"/>
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <state key="highlighted">
@@ -122,10 +126,13 @@
                                     <action selector="ResetPressed:" destination="2" eventType="touchUpInside" id="rQd-BL-O1E"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Usp-jg-GJT">
-                                <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Usp-jg-GJT">
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="65" id="1Ai-VO-EZh"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="BradleyHandITCTT-Bold" family="Bradley Hand" pointSize="26"/>
                                 <state key="normal" title="Solve">
-                                    <color key="titleColor" red="0.19607843459999999" green="0.30980393290000002" blue="0.52156865600000002" alpha="1" colorSpace="calibratedRGB"/>
+                                    <color key="titleColor" red="1" green="1" blue="0.40000000600000002" alpha="1" colorSpace="calibratedRGB"/>
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <state key="highlighted">
@@ -138,6 +145,7 @@
                         </subviews>
                         <color key="backgroundColor" red="0.0" green="0.50196081399917603" blue="0.25098040699958801" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
+                            <constraint firstItem="V1N-Mq-Kll" firstAttribute="bottom" secondItem="Usp-jg-GJT" secondAttribute="bottom" type="default" id="2e7-Nb-5ti"/>
                             <constraint firstItem="JcP-Wj-g8M" firstAttribute="top" secondItem="5" secondAttribute="top" constant="360" id="4Th-7d-FBH"/>
                             <constraint firstItem="cYN-ek-h9x" firstAttribute="top" secondItem="5" secondAttribute="top" constant="55" id="7rM-WQ-cgF"/>
                             <constraint firstItem="gnD-Ii-e1j" firstAttribute="top" secondItem="CPd-0t-URr" secondAttribute="top" type="default" id="ACR-vR-2sa"/>
@@ -155,7 +163,7 @@
                             <constraint firstItem="gnD-Ii-e1j" firstAttribute="leading" secondItem="JcP-Wj-g8M" secondAttribute="leading" type="default" id="bdo-Sz-Hee"/>
                             <constraint firstItem="cYN-ek-h9x" firstAttribute="centerX" secondItem="5" secondAttribute="centerX" type="default" id="daJ-gx-ImQ"/>
                             <constraint firstItem="cYN-ek-h9x" firstAttribute="centerY" secondItem="CPd-0t-URr" secondAttribute="centerY" type="default" id="f3r-vh-d4z"/>
-                            <constraint firstItem="V1N-Mq-Kll" firstAttribute="baseline" secondItem="Usp-jg-GJT" secondAttribute="baseline" type="default" id="jgY-go-xtc"/>
+                            <constraint firstItem="Usp-jg-GJT" firstAttribute="top" secondItem="V1N-Mq-Kll" secondAttribute="top" type="default" id="hHV-EB-Zim"/>
                             <constraint firstItem="JcP-Wj-g8M" firstAttribute="top" secondItem="MNF-mh-hFf" secondAttribute="top" type="default" id="mFH-gg-WZi"/>
                             <constraint firstAttribute="trailing" secondItem="gnD-Ii-e1j" secondAttribute="trailing" constant="20" symbolic="YES" type="default" id="mT9-pX-4Rv"/>
                             <constraint firstItem="MNF-mh-hFf" firstAttribute="leading" secondItem="5" secondAttribute="leading" constant="20" symbolic="YES" type="default" id="odo-lY-pDS"/>
