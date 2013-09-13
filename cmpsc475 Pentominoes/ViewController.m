@@ -10,11 +10,12 @@
 
 #define kNumberBoardImages                     6
 #define kPlayingPieceInitialHorizontalPosition 80
-#define kPlayingPieceInitialVerticalPadding    50
+#define kPlayingPieceInitialVerticalPadding    90
 #define kPlayingPieceVerticalPadding           120
 #define kPlayingPieceHorizontalPadding         20
 #define kPlayingPieceRightBoundPadding         75
 #define kBoardSquareSideLength                 30.0
+#define kAnimationDuration                     1.0
 
 @interface ViewController ()
 @property (weak, nonatomic) IBOutlet UIImageView *board;
@@ -22,6 +23,7 @@
 @property (strong, nonatomic) NSArray *playingPieceImageViews;
 @property (strong, nonatomic) NSArray *solutions;
 @property NSInteger currentBoardNumber;
+@property BOOL solutionFound;
 - (IBAction)BoardButtonPressed:(UIButton *)sender;
 - (IBAction)ResetPressed:(UIButton *)sender;
 - (IBAction)SolvePressed:(UIButton *)sender;
@@ -63,9 +65,12 @@ static NSString *kSolutionsFileExtention = @"plist";
 }
 
 - (IBAction)ResetPressed:(UIButton *)sender {
+    [self placePlayingPiecesInStartPositions];
+    self.solutionFound = NO;
 }
 
 - (IBAction)SolvePressed:(UIButton *)sender {
+    [self placePlayingPiecesInStartPositions];
     [self solveBoard:self.currentBoardNumber];
 }
 
@@ -73,12 +78,15 @@ static NSString *kSolutionsFileExtention = @"plist";
     NSInteger solutionIndex = boardNumber - 1;
     
     // the blank puzzle has no solution
-    if (solutionIndex < 0) {
+    if (solutionIndex < 0 || self.solutionFound == YES) {
         return;
     }
     
     NSArray *tileNames = @[@"F", @"I", @"L", @"N", @"P", @"T", @"U", @"V", @"W", @"X", @"Y", @"Z"];
     NSDictionary *solutionDictionary = self.solutions[solutionIndex];
+    
+    [UIView beginAnimations:nil context:nil];
+    [UIView setAnimationDuration:kAnimationDuration];
     
     for (NSInteger i = 0; i < [tileNames count]; i++) {
         NSString *tileName = tileNames[i];
@@ -91,40 +99,40 @@ static NSString *kSolutionsFileExtention = @"plist";
         CGPoint solutionRelativeOrigin =
             CGPointMake([piecePositionX floatValue] * kBoardSquareSideLength,
                         [piecePositionY floatValue] * kBoardSquareSideLength);
-                
-        /* 
-         The dictionary for each tile contains coordinates x and y, 
-           plus the number of (clockwise) rotations and flips (along vertical axis). 
-         To convert these coordinates into origin coordinates on the board
-           you need to multiply each value by the length of the side of a square (30). 
-         Rotations should be performed before flips (these operations are not commutative).
-        */
-        
-        /*
-         Moving a piece from the main view to the board (and vice-versa) requires 
-           removing the piece from its current superview and adding it as a subview to its new view. 
-           Fortunately, the method - addSubview: automatically removes its argument from its superview (if it is already a subview). 
-         But, you must explicitly change the piece’s frame to use the new superview’s coordinate system.
-         You should use UIView’s -convertPoint:toView: method for this. 
-         Also remember that a view can be visible as a subview even if its frame 
-           is not within the bounds of its superview (unless the superview’s clipToBounds property is set to YES).
-        */
         
         UIView *playingPieceView = self.playingPieceImageViews[i];
-        CGSize playingPieceSize = playingPieceView.frame.size;
-        playingPieceView.frame = CGRectMake(solutionRelativeOrigin.x, solutionRelativeOrigin.y, playingPieceSize.width, playingPieceSize.height);
-
-        // rotate the piece
-        // flip the piece
-        
+        CGPoint newOrigin = [playingPieceView convertPoint:playingPieceView.frame.origin toView:self.board];
+        playingPieceView.frame = CGRectMake(newOrigin.x, newOrigin.y, playingPieceView.frame.size.width, playingPieceView.frame.size.height);
         [self.board addSubview:playingPieceView];
+        
+        playingPieceView.transform = [self rotatePlayingPiece:playingPieceView.transform numberOfRotations:[pieceRotations floatValue]];
+        playingPieceView.transform = [self flipPlayingPiece:playingPieceView.transform numberOfFlips:[pieceFlips integerValue]];
+
+        playingPieceView.frame =
+            CGRectMake(solutionRelativeOrigin.x, solutionRelativeOrigin.y, playingPieceView.frame.size.width, playingPieceView.frame.size.height);
     }
+    
+    [UIView commitAnimations];
+    self.solutionFound = YES;
+}
+
+- (CGAffineTransform) rotatePlayingPiece:(CGAffineTransform)transform numberOfRotations:(CGFloat)numberOfRotations {
+    return CGAffineTransformRotate(transform, M_PI_2 * numberOfRotations);
+}
+
+- (CGAffineTransform) flipPlayingPiece:(CGAffineTransform)transform numberOfFlips:(NSInteger)numberOfFlips {
+    if (numberOfFlips == 1) {
+        return CGAffineTransformScale(transform, -1.0, 1.0);
+    }
+    return transform;
 }
 
 - (void) switchBoards:(NSInteger)buttonTag {
     UIImage *newBoard = self.boardImages[buttonTag];
     [self.board setImage:newBoard];
+    [self placePlayingPiecesInStartPositions];
     self.currentBoardNumber = buttonTag;
+    self.solutionFound = NO;
 }
 
 - (void) placePlayingPiecesInStartPositions {
@@ -136,7 +144,11 @@ static NSString *kSolutionsFileExtention = @"plist";
         CGPointMake(kPlayingPieceInitialHorizontalPosition,
                     lowerBound + kPlayingPieceInitialVerticalPadding);
     
+    [UIView beginAnimations:nil context:nil];
+    [UIView setAnimationDuration:kAnimationDuration];
+    
     for (UIImageView *playingPiece in self.playingPieceImageViews) {
+        playingPiece.transform = CGAffineTransformIdentity;
         CGSize playingPieceSize = playingPiece.frame.size;
         
         // check if there is enough horizontal room to place the piece
@@ -150,6 +162,8 @@ static NSString *kSolutionsFileExtention = @"plist";
         
         currentOrigin.x += playingPieceSize.width + kPlayingPieceHorizontalPadding;
     }
+    
+    [UIView commitAnimations];
 }
 
 - (NSArray *) createBoardImages {
