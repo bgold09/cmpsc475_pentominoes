@@ -112,8 +112,10 @@ static NSString *kSolutionsFileExtention = @"plist";
                         [piecePositionY floatValue] * kBoardSquareSideLength);
         
         UIView *playingPieceView = self.playingPieceImageViews[i];
-        CGPoint newOrigin = [playingPieceView convertPoint:playingPieceView.frame.origin toView:self.board];
-        playingPieceView.frame = CGRectMake(newOrigin.x, newOrigin.y, playingPieceView.frame.size.width, playingPieceView.frame.size.height);
+        CGPoint newOrigin = [self.view convertPoint:playingPieceView.frame.origin toView:self.board];
+        CGRect newFrame = CGRectMake(newOrigin.x, newOrigin.y, playingPieceView.frame.size.width, playingPieceView.frame.size.height);
+        
+        playingPieceView.frame = newFrame;
         [self.board addSubview:playingPieceView];
         
         playingPieceView.transform = [self rotatePlayingPiece:playingPieceView.transform numberOfRotations:[pieceRotations floatValue]];
