@@ -96,9 +96,6 @@ static NSString *kSolutionsFileExtention = @"plist";
     NSArray *tileNames = @[@"F", @"I", @"L", @"N", @"P", @"T", @"U", @"V", @"W", @"X", @"Y", @"Z"];
     NSDictionary *solutionDictionary = self.solutions[solutionIndex];
     
-    [UIView beginAnimations:nil context:nil];
-    [UIView setAnimationDuration:kAnimationDuration];
-    
     for (NSInteger i = 0; i < [tileNames count]; i++) {
         NSString *tileName = tileNames[i];
         NSDictionary *pieceSolution = [solutionDictionary objectForKey:tileName];
@@ -115,17 +112,22 @@ static NSString *kSolutionsFileExtention = @"plist";
         CGPoint newOrigin = [self.view convertPoint:playingPieceView.frame.origin toView:self.board];
         CGRect newFrame = CGRectMake(newOrigin.x, newOrigin.y, playingPieceView.frame.size.width, playingPieceView.frame.size.height);
         
-        playingPieceView.frame = newFrame;
-        [self.board addSubview:playingPieceView];
-        
-        playingPieceView.transform = [self rotatePlayingPiece:playingPieceView.transform numberOfRotations:[pieceRotations floatValue]];
-        playingPieceView.transform = [self flipPlayingPiece:playingPieceView.transform numberOfFlips:[pieceFlips integerValue]];
-
-        playingPieceView.frame =
-            CGRectMake(solutionRelativeOrigin.x, solutionRelativeOrigin.y, playingPieceView.frame.size.width, playingPieceView.frame.size.height);
+        [UIView animateWithDuration:kAnimationDuration
+                         animations:^{
+                             playingPieceView.frame = newFrame;
+                             [self.board addSubview:playingPieceView];
+                             
+                             playingPieceView.transform =
+                                [self rotatePlayingPiece:playingPieceView.transform numberOfRotations:[pieceRotations floatValue]];
+                             playingPieceView.transform =
+                                [self flipPlayingPiece:playingPieceView.transform numberOfFlips:[pieceFlips integerValue]];
+                             
+                             playingPieceView.frame =
+                                CGRectMake(solutionRelativeOrigin.x, solutionRelativeOrigin.y, playingPieceView.frame.size.width, playingPieceView.frame.size.height);
+                         }
+         ];
     }
-    
-    [UIView commitAnimations];
+
     self.solutionFound = YES;
 }
 
@@ -157,26 +159,27 @@ static NSString *kSolutionsFileExtention = @"plist";
         CGPointMake(kPlayingPieceInitialHorizontalPosition,
                     lowerBound + kPlayingPieceInitialVerticalPadding);
     
-    [UIView beginAnimations:nil context:nil];
-    [UIView setAnimationDuration:kAnimationDuration];
-    
-    for (UIImageView *playingPiece in self.playingPieceImageViews) {
-        playingPiece.transform = CGAffineTransformIdentity;
-        
+    for (UIImageView *playingPiece in self.playingPieceImageViews) {        
         // check if there is enough horizontal room to place the piece
         if (currentOrigin.x + playingPiece.frame.size.width > rightBound) {
             currentOrigin.x = kPlayingPieceInitialHorizontalPosition;
             currentOrigin.y += kPlayingPieceVerticalPadding;
         }
         
-        playingPiece.frame =
-            CGRectMake(currentOrigin.x, currentOrigin.y, playingPiece.frame.size.width, playingPiece.frame.size.height);
-        [self.view addSubview:playingPiece];
+        CGPoint origin = [playingPiece.superview convertPoint:playingPiece.frame.origin toView:self.view];
+        CGRect currentFrame = CGRectMake(origin.x, origin.y, playingPiece.frame.size.width, playingPiece.frame.size.height);
+                
+        [UIView animateWithDuration:kAnimationDuration
+                         animations:^{
+                             playingPiece.transform = CGAffineTransformIdentity;
+                             playingPiece.frame = currentFrame;
+                             playingPiece.frame =
+                                CGRectMake(currentOrigin.x, currentOrigin.y, playingPiece.frame.size.width, playingPiece.frame.size.height);
+                             [self.view addSubview:playingPiece];
+                         }];
         
         currentOrigin.x += playingPiece.frame.size.width + kPlayingPieceHorizontalPadding;
     }
-    
-    [UIView commitAnimations];
 }
 
 - (NSArray *) createBoardImages {
