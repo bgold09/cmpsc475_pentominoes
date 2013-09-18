@@ -47,6 +47,7 @@
 		C8CE8EB917E2A8A900036E7B /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = C8CE8EB817E2A8A900036E7B /* icon.png */; };
 		C8CE8EC317E2AA2300036E7B /* Default-Portrait@2x~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = C8CE8EC217E2AA2300036E7B /* Default-Portrait@2x~ipad.png */; };
 		C8CE8EC517E2AA2700036E7B /* Default-Portrait~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = C8CE8EC417E2AA2700036E7B /* Default-Portrait~ipad.png */; };
+		C8FFDF2E17EA40EE00707BA9 /* Model.m in Sources */ = {isa = PBXBuildFile; fileRef = C8FFDF2D17EA40EE00707BA9 /* Model.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -95,6 +96,8 @@
 		C8CE8EB817E2A8A900036E7B /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
 		C8CE8EC217E2AA2300036E7B /* Default-Portrait@2x~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Portrait@2x~ipad.png"; sourceTree = "<group>"; };
 		C8CE8EC417E2AA2700036E7B /* Default-Portrait~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Portrait~ipad.png"; sourceTree = "<group>"; };
+		C8FFDF2C17EA40EE00707BA9 /* Model.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Model.h; sourceTree = "<group>"; };
+		C8FFDF2D17EA40EE00707BA9 /* Model.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Model.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -150,6 +153,8 @@
 				C83E3AC417DE929D0028DF1B /* MainStoryboard.storyboard */,
 				C83E3AC717DE929D0028DF1B /* ViewController.h */,
 				C83E3AC817DE929D0028DF1B /* ViewController.m */,
+				C8FFDF2C17EA40EE00707BA9 /* Model.h */,
+				C8FFDF2D17EA40EE00707BA9 /* Model.m */,
 				C83E3AB317DE929D0028DF1B /* Supporting Files */,
 			);
 			path = "cmpsc475 Pentominoes";
@@ -300,6 +305,7 @@
 				C83E3AB917DE929D0028DF1B /* main.m in Sources */,
 				C83E3ABD17DE929D0028DF1B /* AppDelegate.m in Sources */,
 				C83E3AC917DE929D0028DF1B /* ViewController.m in Sources */,
+				C8FFDF2E17EA40EE00707BA9 /* Model.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
