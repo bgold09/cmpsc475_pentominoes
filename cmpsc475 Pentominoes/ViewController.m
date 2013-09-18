@@ -166,12 +166,12 @@ static NSString *kSolutionsFileExtention = @"plist";
             currentOrigin.y += kPlayingPieceVerticalPadding;
         }
         
-        CGPoint origin = [playingPiece.superview convertPoint:playingPiece.frame.origin toView:self.view];
-        CGRect currentFrame = CGRectMake(origin.x, origin.y, playingPiece.frame.size.width, playingPiece.frame.size.height);
-                
+                        
         [UIView animateWithDuration:kAnimationDuration
                          animations:^{
                              playingPiece.transform = CGAffineTransformIdentity;
+                             CGPoint origin = [playingPiece.superview convertPoint:playingPiece.frame.origin toView:self.view];
+                             CGRect currentFrame = CGRectMake(origin.x, origin.y, playingPiece.frame.size.width, playingPiece.frame.size.height);
                              playingPiece.frame = currentFrame;
                              playingPiece.frame =
                                 CGRectMake(currentOrigin.x, currentOrigin.y, playingPiece.frame.size.width, playingPiece.frame.size.height);
