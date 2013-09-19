@@ -106,21 +106,19 @@
         NSInteger pieceRotations = [self.model numberOfRotationsForPiece:tileName];
         NSInteger pieceFlips = [self.model numberOfFlipsForPiece:tileName];
         
-        [UIView animateWithDuration:kAnimationDuration
-                         animations:^{
-                             playingPiece.frame = newFrame;
-                             [self.board addSubview:playingPiece];
+        [UIView animateWithDuration:kAnimationDuration animations:^{
+            playingPiece.frame = newFrame;
+            [self.board addSubview:playingPiece];
                              
-                             [playingPiece rotateImage:pieceRotations];
-                             if (pieceFlips > 0) {
-                                 [playingPiece flipImage];
-                             }
+            [playingPiece rotateImage:pieceRotations];
+            if (pieceFlips > 0) {
+                [playingPiece flipImage];
+            }
                              
-                             playingPiece.frame =
-                                CGRectMake(solutionRelativeOrigin.x, solutionRelativeOrigin.y,
-                                           playingPiece.frame.size.width, playingPiece.frame.size.height);
-                         }
-         ];
+            playingPiece.frame =
+                CGRectMake(solutionRelativeOrigin.x, solutionRelativeOrigin.y,
+                           playingPiece.frame.size.width, playingPiece.frame.size.height);
+        }];
     }
     
     self.model.solutionFound = YES;
@@ -160,16 +158,16 @@
                     lowerBound + kPlayingPieceInitialVerticalPadding);
     
     for (UIImageView *playingPiece in self.playingPieceImageViews) {
-        [UIView animateWithDuration:kAnimationDuration
-                         animations:^{
-                             playingPiece.transform = CGAffineTransformIdentity;
-                             CGPoint origin = [playingPiece.superview convertPoint:playingPiece.frame.origin toView:self.view];
-                             CGRect currentFrame = CGRectMake(origin.x, origin.y, playingPiece.frame.size.width, playingPiece.frame.size.height);
-                             playingPiece.frame = currentFrame;
-                             playingPiece.frame =
-                                CGRectMake(currentOrigin.x, currentOrigin.y, playingPiece.frame.size.width, playingPiece.frame.size.height);
-                             [self.view addSubview:playingPiece];
-                         }];
+        [UIView animateWithDuration:kAnimationDuration animations:^{
+            playingPiece.transform = CGAffineTransformIdentity;
+            CGPoint origin = [playingPiece.superview convertPoint:playingPiece.frame.origin toView:self.view];
+            CGRect currentFrame = CGRectMake(origin.x, origin.y, playingPiece.frame.size.width, playingPiece.frame.size.height);
+            playingPiece.frame = currentFrame;
+            playingPiece.frame =
+                CGRectMake(currentOrigin.x, currentOrigin.y, playingPiece.frame.size.width, playingPiece.frame.size.height);
+            [self.view addSubview:playingPiece];
+            
+        }];
         
         currentOrigin = [self.model nextPieceStartLocation:currentOrigin forPieceWithSize:playingPiece.frame.size usingRightBound:rightBound];
     }
