@@ -7,6 +7,7 @@
 //
 
 #import "Model.h"
+#import "PlayingPiece.h"
 
 #define kNumberBoardImages                     6
 #define kPlayingPieceInitialHorizontalPosition 80
@@ -62,7 +63,7 @@ static NSString *kSolutionsFileExtention = @"plist";
     return solutionRelativeOrigin;
 }
 
-- (CGFloat)numberOfRotationsForPiece:(NSString *)tileName {
+- (NSInteger)numberOfRotationsForPiece:(NSString *)tileName {
     NSDictionary *solutionDictionary = self.solutions[self.currentBoardNumber - 1];
     NSDictionary *pieceSolution = [solutionDictionary objectForKey:tileName];
     NSNumber *pieceRotations = (NSNumber *) [pieceSolution objectForKey:@"rotations"];
@@ -70,7 +71,7 @@ static NSString *kSolutionsFileExtention = @"plist";
     return [pieceRotations floatValue];
 }
 
-- (CGFloat)numberOfFlipsForPiece:(NSString *)tileName {
+- (NSInteger)numberOfFlipsForPiece:(NSString *)tileName {
     NSDictionary *solutionDictionary = self.solutions[self.currentBoardNumber - 1];
     NSDictionary *pieceSolution = [solutionDictionary objectForKey:tileName];
     NSNumber *pieceFlips = (NSNumber *) [pieceSolution objectForKey:@"flips"];
@@ -96,17 +97,6 @@ static NSString *kSolutionsFileExtention = @"plist";
     return self.boardImages[boardNumber];
 }
 
-- (CGAffineTransform)rotatePlayingPiece:(CGAffineTransform)transform numberOfRotations:(CGFloat)numberOfRotations {
-    return CGAffineTransformRotate(transform, M_PI_2 * numberOfRotations);
-}
-
-- (CGAffineTransform)flipPlayingPiece:(CGAffineTransform)transform numberOfFlips:(NSInteger)numberOfFlips {
-    if (numberOfFlips == 1) {
-        return CGAffineTransformScale(transform, -1.0, 1.0);
-    }
-    return transform;
-}
-
 - (NSArray *)createBoardImages {
     NSMutableArray *newBoardImages = [[NSMutableArray alloc] init];
     for (NSInteger boardImageNumber = 0; boardImageNumber < kNumberBoardImages; boardImageNumber++) {
@@ -125,11 +115,12 @@ static NSString *kSolutionsFileExtention = @"plist";
     for (NSString *tileName in tileNames) {
         NSString *playingPieceImageFileName = [[NSString alloc] initWithFormat:@"%@%@.%@", kPlayingPieceImagePrefix, tileName, kPlayingPieceImageFileExtension];
         UIImage *playingPieceImage = [UIImage imageNamed:playingPieceImageFileName];
-        UIImageView *playingPieceImageView = [[UIImageView alloc] initWithImage:playingPieceImage];
+        PlayingPiece *playingPiece = [[PlayingPiece alloc] initWithImage:playingPieceImage andTileName:tileName];
         
         CGRect frame = CGRectMake(0.0, 0.0, playingPieceImage.size.width / 2, playingPieceImage.size.height / 2);
-        playingPieceImageView.frame = frame;
-        [playingPieces addObject:playingPieceImageView];
+        playingPiece.frame = frame;
+        playingPiece.userInteractionEnabled = YES;
+        [playingPieces addObject:playingPiece];
     }
     
     return playingPieces;

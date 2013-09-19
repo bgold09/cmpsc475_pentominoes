@@ -13,8 +13,8 @@
 @property BOOL solutionFound;
 - (CGPoint)nextPieceStartLocation:(CGPoint)currentOrigin forPieceWithSize:(CGSize)size usingRightBound:(CGFloat)rightBound;
 - (CGPoint)pieceSolutionLocation:(NSString *)tileName;
-- (CGFloat)numberOfRotationsForPiece:(NSString *)tileName;
-- (CGFloat)numberOfFlipsForPiece:(NSString *)tileName;
+- (NSInteger)numberOfRotationsForPiece:(NSString *)tileName;
+- (NSInteger)numberOfFlipsForPiece:(NSString *)tileName;
 - (UIImage *)switchToBoard:(NSInteger)boardNumber;
 - (BOOL)solutionExists;
 - (NSArray *)createBoardImages;

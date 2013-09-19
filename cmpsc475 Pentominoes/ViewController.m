@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "Model.h"
+#import "PlayingPiece.h"
 
 #define kPlayingPieceInitialHorizontalPosition 80
 #define kPlayingPieceInitialVerticalPadding    45
@@ -98,28 +99,26 @@
     
     for (NSInteger i = 0; i < [tileNames count]; i++) {
         NSString *tileName = tileNames[i];
-        
         CGPoint solutionRelativeOrigin = [self.model pieceSolutionLocation:tileName];
-        
-        UIView *playingPieceView = self.playingPieceImageViews[i];
-        CGPoint newOrigin = [self.view convertPoint:playingPieceView.frame.origin toView:self.board];
-        CGRect newFrame = CGRectMake(newOrigin.x, newOrigin.y, playingPieceView.frame.size.width, playingPieceView.frame.size.height);
-        CGFloat pieceRotations = [self.model numberOfRotationsForPiece:tileName];
-        CGFloat pieceFlips = [self.model numberOfFlipsForPiece:tileName];
+        PlayingPiece *playingPiece = self.playingPieceImageViews[i];
+        CGPoint newOrigin = [self.view convertPoint:playingPiece.frame.origin toView:self.board];
+        CGRect newFrame = CGRectMake(newOrigin.x, newOrigin.y, playingPiece.frame.size.width, playingPiece.frame.size.height);
+        NSInteger pieceRotations = [self.model numberOfRotationsForPiece:tileName];
+        NSInteger pieceFlips = [self.model numberOfFlipsForPiece:tileName];
         
         [UIView animateWithDuration:kAnimationDuration
                          animations:^{
-                             playingPieceView.frame = newFrame;
-                             [self.board addSubview:playingPieceView];
+                             playingPiece.frame = newFrame;
+                             [self.board addSubview:playingPiece];
                              
-                             playingPieceView.transform =
-                                [self rotatePlayingPiece:playingPieceView.transform numberOfRotations:pieceRotations];
-                             playingPieceView.transform =
-                                [self flipPlayingPiece:playingPieceView.transform numberOfFlips:pieceFlips];
+                             [playingPiece rotateImage:pieceRotations];
+                             if (pieceFlips > 0) {
+                                 [playingPiece flipImage];
+                             }
                              
-                             playingPieceView.frame =
+                             playingPiece.frame =
                                 CGRectMake(solutionRelativeOrigin.x, solutionRelativeOrigin.y,
-                                           playingPieceView.frame.size.width, playingPieceView.frame.size.height);
+                                           playingPiece.frame.size.width, playingPiece.frame.size.height);
                          }
          ];
     }
@@ -144,7 +143,7 @@
     return transform;
 }
 
-- (BOOL) useWidthOfScreenForRightBound {
+- (BOOL)useWidthOfScreenForRightBound {
     UIDevice *device = [UIDevice currentDevice];
     UIDeviceOrientation orientation = [device orientation];
     return UIDeviceOrientationIsPortrait(orientation);
