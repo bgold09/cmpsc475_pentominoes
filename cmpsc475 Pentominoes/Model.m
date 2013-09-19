@@ -18,6 +18,7 @@
 #define kAnimationDuration                     1.0
 
 @interface Model ()
+@property (strong, nonatomic) NSArray *boardImages;
 @property (strong, nonatomic) NSArray *solutions;
 @property NSInteger currentBoardNumber;
 
@@ -25,6 +26,10 @@
 
 @implementation Model
 
+static NSString *kBoardImagePrefix = @"Board";
+static NSString *kBoardImageFileExtension = @"png";
+static NSString *kPlayingPieceImagePrefix = @"tile";
+static NSString *kPlayingPieceImageFileExtension = @"png";
 static NSString *kSolutionsFileName = @"Solutions";
 static NSString *kSolutionsFileExtention = @"plist";
 
@@ -32,116 +37,105 @@ static NSString *kSolutionsFileExtention = @"plist";
     self = [super init];
     if (self) {
         _solutions = [self loadSolutions];
+        _boardImages = [self createBoardImages];
     }
     return self;
 }
 
-- (void) solveBoard:(UIView *)boardView forPieces:(NSArray *)playingPieces usingSuperView:(UIView *)view {
-    NSInteger solutionIndex = self.currentBoardNumber - 1;
-    
-    if (solutionIndex < 0) {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"No Solution"
-                                                        message:@"The blank board has no solution!"
-                                                       delegate:nil
-                                              cancelButtonTitle:@"OK"
-                                              otherButtonTitles:nil];
-        [alert show];
-        return;
+- (BOOL)solutionExists {
+    if (self.currentBoardNumber < 1) {
+        return NO;
     }
+    return YES;
+}
+
+- (CGPoint)pieceSolutionLocation:(NSString *)tileName {
+    NSDictionary *solutionDictionary = self.solutions[self.currentBoardNumber - 1];
+    NSDictionary *pieceSolution = [solutionDictionary objectForKey:tileName];
+    NSNumber *piecePositionX = (NSNumber *) [pieceSolution objectForKey:@"x"];
+    NSNumber *piecePositionY = (NSNumber *) [pieceSolution objectForKey:@"y"];
     
-    if (self.solutionFound == YES) {
-        return;
-    }
-    
-    NSArray *tileNames = @[@"F", @"I", @"L", @"N", @"P", @"T", @"U", @"V", @"W", @"X", @"Y", @"Z"];
-    NSDictionary *solutionDictionary = self.solutions[solutionIndex];
-    
-    for (NSInteger i = 0; i < [tileNames count]; i++) {
-        NSString *tileName = tileNames[i];
-        NSDictionary *pieceSolution = [solutionDictionary objectForKey:tileName];
-        NSNumber *piecePositionX = (NSNumber *) [pieceSolution objectForKey:@"x"];
-        NSNumber *piecePositionY = (NSNumber *) [pieceSolution objectForKey:@"y"];
-        NSNumber *pieceRotations = (NSNumber *) [pieceSolution objectForKey:@"rotations"];
-        NSNumber *pieceFlips = (NSNumber *) [pieceSolution objectForKey:@"flips"];
-        
-        CGPoint solutionRelativeOrigin =
+    CGPoint solutionRelativeOrigin =
         CGPointMake([piecePositionX floatValue] * kBoardSquareSideLength,
                     [piecePositionY floatValue] * kBoardSquareSideLength);
-        
-        UIView *playingPieceView = playingPieces[i];
-        CGPoint newOrigin = [view convertPoint:playingPieceView.frame.origin toView:boardView];
-        CGRect newFrame = CGRectMake(newOrigin.x, newOrigin.y, playingPieceView.frame.size.width, playingPieceView.frame.size.height);
-        
-        [UIView animateWithDuration:kAnimationDuration
-                         animations:^{
-                             playingPieceView.frame = newFrame;
-                             [boardView addSubview:playingPieceView];
-                             
-                             playingPieceView.transform =
-                             [self rotatePlayingPiece:playingPieceView.transform numberOfRotations:[pieceRotations floatValue]];
-                             playingPieceView.transform =
-                             [self flipPlayingPiece:playingPieceView.transform numberOfFlips:[pieceFlips integerValue]];
-                             
-                             playingPieceView.frame =
-                             CGRectMake(solutionRelativeOrigin.x, solutionRelativeOrigin.y, playingPieceView.frame.size.width, playingPieceView.frame.size.height);
-                         }
-         ];
-    }
+    
+    return solutionRelativeOrigin;
 }
 
-- (void) placePlayingPiecesInStartPositions:(NSArray *)playingPieces onView:(UIView *)view usingBoard:(UIView *)board {
-    CGRect viewFrame = view.frame;
-    CGFloat rightBound = viewFrame.origin.x + viewFrame.size.width - kPlayingPieceRightBoundPadding;
-    CGFloat lowerBound = board.frame.origin.y + board.frame.size.height;
+- (CGFloat)numberOfRotationsForPiece:(NSString *)tileName {
+    NSDictionary *solutionDictionary = self.solutions[self.currentBoardNumber - 1];
+    NSDictionary *pieceSolution = [solutionDictionary objectForKey:tileName];
+    NSNumber *pieceRotations = (NSNumber *) [pieceSolution objectForKey:@"rotations"];
     
-    CGPoint currentOrigin =
-    CGPointMake(kPlayingPieceInitialHorizontalPosition,
-                lowerBound + kPlayingPieceInitialVerticalPadding);
+    return [pieceRotations floatValue];
+}
+
+- (CGFloat)numberOfFlipsForPiece:(NSString *)tileName {
+    NSDictionary *solutionDictionary = self.solutions[self.currentBoardNumber - 1];
+    NSDictionary *pieceSolution = [solutionDictionary objectForKey:tileName];
+    NSNumber *pieceFlips = (NSNumber *) [pieceSolution objectForKey:@"flips"];
     
-    for (UIImageView *playingPiece in playingPieces) {
-        // check if there is enough horizontal room to place the piece
-        if (currentOrigin.x + playingPiece.frame.size.width > rightBound) {
-            currentOrigin.x = kPlayingPieceInitialHorizontalPosition;
-            currentOrigin.y += kPlayingPieceVerticalPadding;
-        }
-        
-        [UIView animateWithDuration:kAnimationDuration
-                         animations:^{
-                             playingPiece.transform = CGAffineTransformIdentity;
-                             CGPoint origin = [playingPiece.superview convertPoint:playingPiece.frame.origin toView:view];
-                             CGRect currentFrame = CGRectMake(origin.x, origin.y, playingPiece.frame.size.width, playingPiece.frame.size.height);
-                             playingPiece.frame = currentFrame;
-                             playingPiece.frame =
-                             CGRectMake(currentOrigin.x, currentOrigin.y, playingPiece.frame.size.width, playingPiece.frame.size.height);
-                             [view addSubview:playingPiece];
-                         }];
-        
-        currentOrigin.x += playingPiece.frame.size.width + kPlayingPieceHorizontalPadding;
+    return [pieceFlips floatValue];
+}
+
+- (CGPoint)nextPieceStartLocation:(CGPoint)currentOrigin forPieceWithSize:(CGSize)size usingRightBound:(CGFloat)rightBound {
+    if (currentOrigin.x + size.width > rightBound) {
+        currentOrigin.x = kPlayingPieceInitialHorizontalPosition;
+        currentOrigin.y += kPlayingPieceVerticalPadding;
+    } else {
+        currentOrigin.x += size.width + kPlayingPieceHorizontalPadding;
     }
     
     self.solutionFound = NO;
+    return currentOrigin;
 }
 
-- (void) switchBoards:(UIImageView *)board toBoardNumber:(NSInteger)boardNumber usingBoardImages:(NSArray *)boardImages andResetPieces:(NSArray *)playingPieces toView:(UIView *)view {
-    UIImage *newBoard = boardImages[boardNumber];
-    [board setImage:newBoard];
-    [self placePlayingPiecesInStartPositions:playingPieces onView:view usingBoard:board];
+- (UIImage *)switchToBoard:(NSInteger)boardNumber {
     self.solutionFound = NO;
     self.currentBoardNumber = boardNumber;
+    return self.boardImages[boardNumber];
 }
 
-- (CGAffineTransform) rotatePlayingPiece:(CGAffineTransform)transform numberOfRotations:(CGFloat)numberOfRotations {
+- (CGAffineTransform)rotatePlayingPiece:(CGAffineTransform)transform numberOfRotations:(CGFloat)numberOfRotations {
     return CGAffineTransformRotate(transform, M_PI_2 * numberOfRotations);
 }
 
-- (CGAffineTransform) flipPlayingPiece:(CGAffineTransform)transform numberOfFlips:(NSInteger)numberOfFlips {
+- (CGAffineTransform)flipPlayingPiece:(CGAffineTransform)transform numberOfFlips:(NSInteger)numberOfFlips {
     if (numberOfFlips == 1) {
         return CGAffineTransformScale(transform, -1.0, 1.0);
     }
     return transform;
 }
 
-- (NSArray *) loadSolutions {
+- (NSArray *)createBoardImages {
+    NSMutableArray *newBoardImages = [[NSMutableArray alloc] init];
+    for (NSInteger boardImageNumber = 0; boardImageNumber < kNumberBoardImages; boardImageNumber++) {
+        NSString *boardImageFileName = [[NSString alloc] initWithFormat:@"%@%d.%@", kBoardImagePrefix, boardImageNumber, kBoardImageFileExtension];
+        UIImage *boardImage = [UIImage imageNamed:boardImageFileName];
+        [newBoardImages addObject:boardImage];
+    }
+    
+    return newBoardImages;
+}
+
+- (NSArray *)createPlayingPieceImageViews {
+    NSArray *tileNames = @[@"F", @"I", @"L", @"N", @"P", @"T", @"U", @"V", @"W", @"X", @"Y", @"Z"];
+    NSMutableArray *playingPieces = [[NSMutableArray alloc] init];
+    
+    for (NSString *tileName in tileNames) {
+        NSString *playingPieceImageFileName = [[NSString alloc] initWithFormat:@"%@%@.%@", kPlayingPieceImagePrefix, tileName, kPlayingPieceImageFileExtension];
+        UIImage *playingPieceImage = [UIImage imageNamed:playingPieceImageFileName];
+        UIImageView *playingPieceImageView = [[UIImageView alloc] initWithImage:playingPieceImage];
+        
+        CGRect frame = CGRectMake(0.0, 0.0, playingPieceImage.size.width / 2, playingPieceImage.size.height / 2);
+        playingPieceImageView.frame = frame;
+        [playingPieces addObject:playingPieceImageView];
+    }
+    
+    return playingPieces;
+}
+
+- (NSArray *)loadSolutions {
     NSString *solutionsFilePath = [[NSBundle mainBundle] pathForResource:kSolutionsFileName ofType:kSolutionsFileExtention];
     NSMutableArray *array = [[NSMutableArray alloc] initWithContentsOfFile:solutionsFilePath];
     return array;

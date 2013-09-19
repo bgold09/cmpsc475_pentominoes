@@ -11,7 +11,12 @@
 @interface Model : NSObject
 
 @property BOOL solutionFound;
-- (void) solveBoard:(UIView *)boardView forPieces:(NSArray *)playingPieces usingSuperView:(UIView *)view;
-- (void) placePlayingPiecesInStartPositions:(NSArray *)playingPieces onView:(UIView *)view usingBoard:(UIView *)board;
-- (void) switchBoards:(UIImageView *)board toBoardNumber:(NSInteger)boardNumber usingBoardImages:(NSArray *)boardImages andResetPieces:(NSArray *)playingPieces toView:(UIView *)view;
+- (CGPoint)nextPieceStartLocation:(CGPoint)currentOrigin forPieceWithSize:(CGSize)size usingRightBound:(CGFloat)rightBound;
+- (CGPoint)pieceSolutionLocation:(NSString *)tileName;
+- (CGFloat)numberOfRotationsForPiece:(NSString *)tileName;
+- (CGFloat)numberOfFlipsForPiece:(NSString *)tileName;
+- (UIImage *)switchToBoard:(NSInteger)boardNumber;
+- (BOOL)solutionExists;
+- (NSArray *)createBoardImages;
+- (NSArray *)createPlayingPieceImageViews;
 @end

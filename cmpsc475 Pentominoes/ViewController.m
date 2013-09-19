@@ -9,7 +9,13 @@
 #import "ViewController.h"
 #import "Model.h"
 
-#define kNumberBoardImages 6
+#define kPlayingPieceInitialHorizontalPosition 80
+#define kPlayingPieceInitialVerticalPadding    90
+#define kPlayingPieceVerticalPadding           120
+#define kPlayingPieceHorizontalPadding         20
+#define kPlayingPieceRightBoundPadding         200
+#define kBoardSquareSideLength                 30.0
+#define kAnimationDuration                     1.0
 
 @interface ViewController ()
 @property (weak, nonatomic) IBOutlet UIImageView *board;
@@ -24,11 +30,6 @@
 
 @implementation ViewController
 
-static NSString *kBoardImagePrefix = @"Board";
-static NSString *kBoardImageFileExtension = @"png";
-static NSString *kPlayingPieceImagePrefix = @"tile";
-static NSString *kPlayingPieceImageFileExtension = @"png";
-
 - (id)initWithCoder:(NSCoder *)aDecoder {
     self = [super initWithCoder:aDecoder];
     if (self) {
@@ -40,14 +41,14 @@ static NSString *kPlayingPieceImageFileExtension = @"png";
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    _boardImages = [self createBoardImages];
-    _playingPieceImageViews = [self createPlayingPieceImageViews];
+    _boardImages = [self.model createBoardImages];
+    _playingPieceImageViews = [self.model createPlayingPieceImageViews];
 	// Do any additional setup after loading the view, typically from a nib.
 }
 
-- (void) viewDidAppear:(BOOL)animated
+- (void)viewDidAppear:(BOOL)animated
 {
-    [self.model placePlayingPiecesInStartPositions:self.playingPieceImageViews onView:self.view usingBoard:self.board];
+    [self placePiecesInStartPositions];
 }
 
 - (void)didReceiveMemoryWarning
@@ -58,47 +59,104 @@ static NSString *kPlayingPieceImageFileExtension = @"png";
 
 - (IBAction)BoardButtonPressed:(UIButton *)sender {
     NSInteger buttonTag = [sender tag];
-    [self.model switchBoards:self.board toBoardNumber:buttonTag usingBoardImages:self.boardImages andResetPieces:self.playingPieceImageViews toView:self.view];
+    [self switchBoards:buttonTag];
 }
 
 - (IBAction)ResetPressed:(UIButton *)sender {
-    [self.model placePlayingPiecesInStartPositions:self.playingPieceImageViews onView:self.view usingBoard:self.board];
+    [self placePiecesInStartPositions];
 }
 
 - (IBAction)SolvePressed:(UIButton *)sender {
     if (self.model.solutionFound == NO) {
-        [self.model placePlayingPiecesInStartPositions:self.playingPieceImageViews onView:self.view usingBoard:self.board];
-    }    
-    
-    [self.model solveBoard:self.board forPieces:self.playingPieceImageViews usingSuperView:self.view];
+        [self placePiecesInStartPositions];
+    }
+    [self solveBoard];
 }
 
-- (NSArray *) createBoardImages {
-    NSMutableArray *newBoardImages = [[NSMutableArray alloc] init];
-    for (NSInteger boardImageNumber = 0; boardImageNumber < kNumberBoardImages; boardImageNumber++) {
-        NSString *boardImageFileName = [[NSString alloc] initWithFormat:@"%@%d.%@", kBoardImagePrefix, boardImageNumber, kBoardImageFileExtension];
-        UIImage *boardImage = [UIImage imageNamed:boardImageFileName];
-        [newBoardImages addObject:boardImage];
+- (void)solveBoard {
+    if (![self.model solutionExists]) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"No Solution"
+                                                        message:@"The blank board has no solution!"
+                                                       delegate:nil
+                                              cancelButtonTitle:@"OK"
+                                              otherButtonTitles:nil];
+        [alert show];
+        return;
     }
     
-    return newBoardImages;
-}
-
-- (NSArray *) createPlayingPieceImageViews {
+    if (self.model.solutionFound == YES) {
+        return;
+    }
+    
     NSArray *tileNames = @[@"F", @"I", @"L", @"N", @"P", @"T", @"U", @"V", @"W", @"X", @"Y", @"Z"];
-    NSMutableArray *playingPieces = [[NSMutableArray alloc] init];
     
-    for (NSString *tileName in tileNames) {
-        NSString *playingPieceImageFileName = [[NSString alloc] initWithFormat:@"%@%@.%@", kPlayingPieceImagePrefix, tileName, kPlayingPieceImageFileExtension];
-        UIImage *playingPieceImage = [UIImage imageNamed:playingPieceImageFileName];
-        UIImageView *playingPieceImageView = [[UIImageView alloc] initWithImage:playingPieceImage];
+    for (NSInteger i = 0; i < [tileNames count]; i++) {
+        NSString *tileName = tileNames[i];
         
-        CGRect frame = CGRectMake(0.0, 0.0, playingPieceImage.size.width / 2, playingPieceImage.size.height / 2);
-        playingPieceImageView.frame = frame;
-        [playingPieces addObject:playingPieceImageView];
+        CGPoint solutionRelativeOrigin = [self.model pieceSolutionLocation:tileName];
+        
+        UIView *playingPieceView = self.playingPieceImageViews[i];
+        CGPoint newOrigin = [self.view convertPoint:playingPieceView.frame.origin toView:self.board];
+        CGRect newFrame = CGRectMake(newOrigin.x, newOrigin.y, playingPieceView.frame.size.width, playingPieceView.frame.size.height);
+        CGFloat pieceRotations = [self.model numberOfRotationsForPiece:tileName];
+        CGFloat pieceFlips = [self.model numberOfFlipsForPiece:tileName];
+        
+        [UIView animateWithDuration:kAnimationDuration
+                         animations:^{
+                             playingPieceView.frame = newFrame;
+                             [self.board addSubview:playingPieceView];
+                             
+                             playingPieceView.transform =
+                                [self rotatePlayingPiece:playingPieceView.transform numberOfRotations:pieceRotations];
+                             playingPieceView.transform =
+                                [self flipPlayingPiece:playingPieceView.transform numberOfFlips:pieceFlips];
+                             
+                             playingPieceView.frame =
+                                CGRectMake(solutionRelativeOrigin.x, solutionRelativeOrigin.y, playingPieceView.frame.size.width, playingPieceView.frame.size.height);
+                         }
+         ];
     }
+}
+
+-(void)switchBoards:(NSInteger)boardNumber {
+    UIImage *newBoard = [self.model switchToBoard:boardNumber];
+    [self.board setImage:newBoard];
+    [self placePiecesInStartPositions];
+}
+
+- (CGAffineTransform)rotatePlayingPiece:(CGAffineTransform)transform numberOfRotations:(CGFloat)numberOfRotations {
+    return CGAffineTransformRotate(transform, M_PI_2 * numberOfRotations);
+}
+
+- (CGAffineTransform)flipPlayingPiece:(CGAffineTransform)transform numberOfFlips:(NSInteger)numberOfFlips {
+    if (numberOfFlips == 1) {
+        return CGAffineTransformScale(transform, -1.0, 1.0);
+    }
+    return transform;
+}
+
+- (void)placePiecesInStartPositions {
+    CGFloat rightBound = self.view.frame.origin.x + self.view.frame.size.width - kPlayingPieceRightBoundPadding;
+    CGFloat lowerBound = self.board.frame.origin.y + self.board.frame.size.height;
+
+    CGPoint currentOrigin =
+        CGPointMake(kPlayingPieceInitialHorizontalPosition,
+                    lowerBound + kPlayingPieceInitialVerticalPadding);
     
-    return playingPieces;
+    for (UIImageView *playingPiece in self.playingPieceImageViews) {
+        [UIView animateWithDuration:kAnimationDuration
+                         animations:^{
+                             playingPiece.transform = CGAffineTransformIdentity;
+                             CGPoint origin = [playingPiece.superview convertPoint:playingPiece.frame.origin toView:self.view];
+                             CGRect currentFrame = CGRectMake(origin.x, origin.y, playingPiece.frame.size.width, playingPiece.frame.size.height);
+                             playingPiece.frame = currentFrame;
+                             playingPiece.frame =
+                                CGRectMake(currentOrigin.x, currentOrigin.y, playingPiece.frame.size.width, playingPiece.frame.size.height);
+                             [self.view addSubview:playingPiece];
+                         }];
+        
+        currentOrigin = [self.model nextPieceStartLocation:currentOrigin forPieceWithSize:playingPiece.frame.size usingRightBound:rightBound];
+    }
 }
 
 @end
