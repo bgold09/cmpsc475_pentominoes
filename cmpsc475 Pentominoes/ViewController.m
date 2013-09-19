@@ -10,10 +10,10 @@
 #import "Model.h"
 
 #define kPlayingPieceInitialHorizontalPosition 80
-#define kPlayingPieceInitialVerticalPadding    90
+#define kPlayingPieceInitialVerticalPadding    45
 #define kPlayingPieceVerticalPadding           120
 #define kPlayingPieceHorizontalPadding         20
-#define kPlayingPieceRightBoundPadding         200
+#define kPlayingPieceRightBoundPadding         250
 #define kBoardSquareSideLength                 30.0
 #define kAnimationDuration                     1.0
 
@@ -49,6 +49,12 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [self placePiecesInStartPositions];
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+    if (!self.model.solutionFound) {
+        [self placePiecesInStartPositions];
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -112,10 +118,13 @@
                                 [self flipPlayingPiece:playingPieceView.transform numberOfFlips:pieceFlips];
                              
                              playingPieceView.frame =
-                                CGRectMake(solutionRelativeOrigin.x, solutionRelativeOrigin.y, playingPieceView.frame.size.width, playingPieceView.frame.size.height);
+                                CGRectMake(solutionRelativeOrigin.x, solutionRelativeOrigin.y,
+                                           playingPieceView.frame.size.width, playingPieceView.frame.size.height);
                          }
          ];
     }
+    
+    self.model.solutionFound = YES;
 }
 
 -(void)switchBoards:(NSInteger)boardNumber {
@@ -135,8 +144,16 @@
     return transform;
 }
 
+- (BOOL) useWidthOfScreenForRightBound {
+    UIDevice *device = [UIDevice currentDevice];
+    UIDeviceOrientation orientation = [device orientation];
+    return UIDeviceOrientationIsPortrait(orientation);
+}
+
 - (void)placePiecesInStartPositions {
-    CGFloat rightBound = self.view.frame.origin.x + self.view.frame.size.width - kPlayingPieceRightBoundPadding;
+    CGFloat rightBoundValue = [self useWidthOfScreenForRightBound] ? self.view.frame.size.width : self.view.frame.size.height;
+    CGRect bounds = [[UIScreen mainScreen] bounds];
+    CGFloat rightBound = bounds.origin.x + rightBoundValue - kPlayingPieceRightBoundPadding;
     CGFloat lowerBound = self.board.frame.origin.y + self.board.frame.size.height;
 
     CGPoint currentOrigin =
