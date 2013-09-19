@@ -15,5 +15,6 @@
 - (id)initWithImage:(UIImage *)image andTileName:(NSString *)tileName;
 - (void)rotateImage:(NSInteger)numberOfRotations;
 - (void)flipImage;
+- (void)registerGestureRecognizers;
 
 @end

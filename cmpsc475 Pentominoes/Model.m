@@ -120,6 +120,7 @@ static NSString *kSolutionsFileExtention = @"plist";
         CGRect frame = CGRectMake(0.0, 0.0, playingPieceImage.size.width / 2, playingPieceImage.size.height / 2);
         playingPiece.frame = frame;
         playingPiece.userInteractionEnabled = YES;
+        [playingPiece registerGestureRecognizers];
         [playingPieces addObject:playingPiece];
     }
     
