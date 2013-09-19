@@ -144,7 +144,7 @@
 - (BOOL)useWidthOfScreenForRightBound {
     UIDevice *device = [UIDevice currentDevice];
     UIDeviceOrientation orientation = [device orientation];
-    return UIDeviceOrientationIsPortrait(orientation);
+    return UIDeviceOrientationIsPortrait(orientation) || orientation == UIDeviceOrientationUnknown;
 }
 
 - (void)placePiecesInStartPositions {
