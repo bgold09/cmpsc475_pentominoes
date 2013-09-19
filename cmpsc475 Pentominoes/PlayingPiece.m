@@ -52,24 +52,4 @@
     self.pieceIsFlipped = !self.pieceIsFlipped;
 }
 
-#pragma mark - Gestures
-
-- (void)registerGestureRecognizers {
-    UITapGestureRecognizer *singleTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
-    UITapGestureRecognizer *doubleTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
-    doubleTapRecognizer.numberOfTapsRequired = 2;
-    [singleTapRecognizer requireGestureRecognizerToFail:doubleTapRecognizer];
-    [self addGestureRecognizer:singleTapRecognizer];
-    [self addGestureRecognizer:doubleTapRecognizer];
-}
-
-- (void)handleSingleTap:(UITapGestureRecognizer *)recognizer {
-    [self rotateImage:1];
-}
-
-- (void)handleDoubleTap:(UITapGestureRecognizer *)recognizer {
-    [self flipImage];
-}
-
-
 @end

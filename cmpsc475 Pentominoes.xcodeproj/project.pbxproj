@@ -158,9 +158,9 @@
 				C83E3AC817DE929D0028DF1B /* ViewController.m */,
 				C8FFDF2C17EA40EE00707BA9 /* Model.h */,
 				C8FFDF2D17EA40EE00707BA9 /* Model.m */,
-				C83E3AB317DE929D0028DF1B /* Supporting Files */,
 				C86FFB5B17EA886900315A3E /* PlayingPiece.h */,
 				C86FFB5C17EA886900315A3E /* PlayingPiece.m */,
+				C83E3AB317DE929D0028DF1B /* Supporting Files */,
 			);
 			path = "cmpsc475 Pentominoes";
 			sourceTree = "<group>";

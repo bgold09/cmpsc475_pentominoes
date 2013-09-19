@@ -44,6 +44,7 @@
     [super viewDidLoad];
     _boardImages = [self.model createBoardImages];
     _playingPieceImageViews = [self.model createPlayingPieceImageViews];
+    [self registerGestureRecognizersOnPlayingPieces];
 	// Do any additional setup after loading the view, typically from a nib.
 }
 
@@ -172,5 +173,83 @@
         currentOrigin = [self.model nextPieceStartLocation:currentOrigin forPieceWithSize:playingPiece.frame.size usingRightBound:rightBound];
     }
 }
+
+#pragma mark - Gestures
+
+- (void)registerGestureRecognizersOnPlayingPieces {
+    for (PlayingPiece *playingPiece in self.playingPieceImageViews) {
+        UITapGestureRecognizer *singleTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
+        UITapGestureRecognizer *doubleTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
+        UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
+        [singleTapRecognizer requireGestureRecognizerToFail:doubleTapRecognizer];
+        doubleTapRecognizer.numberOfTapsRequired = 2;
+        [playingPiece addGestureRecognizer:singleTapRecognizer];
+        [playingPiece addGestureRecognizer:doubleTapRecognizer];
+        [playingPiece addGestureRecognizer:panRecognizer];
+    }
+}
+
+- (void)handleSingleTap:(UITapGestureRecognizer *)recognizer {
+    PlayingPiece *playingPiece = (PlayingPiece *) recognizer.view;
+    [playingPiece rotateImage:1];
+}
+
+- (void)handleDoubleTap:(UITapGestureRecognizer *)recognizer {
+    PlayingPiece *playingPiece = (PlayingPiece *) recognizer.view;
+    [playingPiece flipImage];
+}
+
+- (void)handlePanGesture:(UIPanGestureRecognizer *)recognizer {
+    PlayingPiece *playingPiece = (PlayingPiece *) recognizer.view;
+    
+    switch (recognizer.state) {
+        case UIGestureRecognizerStateBegan:
+            break;
+        case UIGestureRecognizerStateChanged:
+        {
+            playingPiece.center = [recognizer locationInView:playingPiece.superview];
+            break;
+        }
+        case UIGestureRecognizerStateEnded:
+        case UIGestureRecognizerStateCancelled:
+        {
+            CGPoint playingPieceOrigin = playingPiece.frame.origin;
+            UIView *newSuperView;
+            CGPoint newOrigin;
+            
+            if (CGRectContainsPoint(self.board.frame, playingPieceOrigin) ||
+                    CGRectContainsPoint(self.board.frame, CGPointMake(playingPieceOrigin.x + playingPiece.frame.size.width,
+                                                                      playingPieceOrigin.y + playingPiece.frame.size.height))) {
+                
+                newSuperView = self.board;
+                newOrigin = [playingPiece.superview convertPoint:playingPiece.frame.origin toView:newSuperView];
+                playingPiece.frame = CGRectMake(newOrigin.x, newOrigin.y, playingPiece.frame.size.width, playingPiece.frame.size.height);
+                newOrigin = [self snapPieceToBoard:newOrigin];
+                playingPiece.frame = CGRectMake(newOrigin.x, newOrigin.y, playingPiece.frame.size.width, playingPiece.frame.size.height);
+            } else {
+                newSuperView = self.view;
+                newOrigin = [playingPiece.superview convertPoint:playingPiece.frame.origin fromView:newSuperView];
+                playingPiece.frame = CGRectMake(newOrigin.x, newOrigin.y, playingPiece.frame.size.width, playingPiece.frame.size.height);
+            }
+            
+            if (newSuperView != playingPiece.superview) {
+                [newSuperView addSubview:playingPiece];
+                playingPiece.frame = CGRectMake(newOrigin.x, newOrigin.y, playingPiece.frame.size.width, playingPiece.frame.size.height);
+            }
+        }
+            break;
+        default:
+            break;
+    }
+}
+
+- (CGPoint)snapPieceToBoard:(CGPoint)currentOrigin {
+    CGPoint point =
+        CGPointMake(kBoardSquareSideLength * floorf((currentOrigin.x/kBoardSquareSideLength) + 0.5),
+                    kBoardSquareSideLength * floorf((currentOrigin.y / kBoardSquareSideLength) + 0.5));
+    
+    return point;
+}
+
 
 @end
