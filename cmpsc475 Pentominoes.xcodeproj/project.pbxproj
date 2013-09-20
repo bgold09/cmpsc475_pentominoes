@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C800C69517EBCCC60066A398 /* InfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C800C69417EBCCC60066A398 /* InfoViewController.m */; };
 		C83E3AAD17DE929D0028DF1B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C83E3AAC17DE929D0028DF1B /* UIKit.framework */; };
 		C83E3AAF17DE929D0028DF1B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C83E3AAE17DE929D0028DF1B /* Foundation.framework */; };
 		C83E3AB117DE929D0028DF1B /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C83E3AB017DE929D0028DF1B /* CoreGraphics.framework */; };
@@ -52,6 +53,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		C800C69317EBCCC60066A398 /* InfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfoViewController.h; sourceTree = "<group>"; };
+		C800C69417EBCCC60066A398 /* InfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfoViewController.m; sourceTree = "<group>"; };
 		C83E3AA917DE929D0028DF1B /* cmpsc475 Pentominoes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "cmpsc475 Pentominoes.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C83E3AAC17DE929D0028DF1B /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		C83E3AAE17DE929D0028DF1B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -156,6 +159,8 @@
 				C83E3AC417DE929D0028DF1B /* MainStoryboard.storyboard */,
 				C83E3AC717DE929D0028DF1B /* ViewController.h */,
 				C83E3AC817DE929D0028DF1B /* ViewController.m */,
+				C800C69317EBCCC60066A398 /* InfoViewController.h */,
+				C800C69417EBCCC60066A398 /* InfoViewController.m */,
 				C8FFDF2C17EA40EE00707BA9 /* Model.h */,
 				C8FFDF2D17EA40EE00707BA9 /* Model.m */,
 				C86FFB5B17EA886900315A3E /* PlayingPiece.h */,
@@ -312,6 +317,7 @@
 				C83E3AC917DE929D0028DF1B /* ViewController.m in Sources */,
 				C8FFDF2E17EA40EE00707BA9 /* Model.m in Sources */,
 				C86FFB5D17EA886900315A3E /* PlayingPiece.m in Sources */,
+				C800C69517EBCCC60066A398 /* InfoViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

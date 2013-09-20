@@ -7,6 +7,7 @@
 //
 
 #import "ViewController.h"
+#import "InfoViewController.h"
 #import "Model.h"
 #import "PlayingPiece.h"
 
@@ -18,7 +19,7 @@
 #define kBoardSquareSideLength                 30.0
 #define kAnimationDuration                     1.0
 
-@interface ViewController ()
+@interface ViewController () <InfoDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *board;
 @property (strong, nonatomic) NSArray *boardImages;
 @property (strong, nonatomic) NSArray *playingPieceImageViews;
@@ -26,6 +27,7 @@
 - (IBAction)BoardButtonPressed:(UIButton *)sender;
 - (IBAction)ResetPressed:(UIButton *)sender;
 - (IBAction)SolvePressed:(UIButton *)sender;
+- (IBAction)unwindSegue:(UIStoryboardSegue *)segue;
 
 @end
 
@@ -251,5 +253,22 @@
     return point;
 }
 
+#pragma mark - Info Delegate
+
+- (void)dismissMe {
+    [self dismissViewControllerAnimated:YES completion:NULL];
+}
+
+#pragma mark - Segues
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    if ([segue.identifier isEqualToString:@"InfoSegue"]) {
+        InfoViewController *infoViewController = segue.destinationViewController;
+        infoViewController.delegate = self;
+    }
+}
+
+- (IBAction)unwindSegue:(UIStoryboardSegue *)segue {
+    
+}
 
 @end
