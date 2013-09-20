@@ -78,6 +78,7 @@
 }
 
 - (IBAction)SolvePressed:(UIButton *)sender {
+    [self placePiecesInStartPositions];
     [self solveBoard];
 }
 
@@ -95,8 +96,6 @@
     if (self.model.solutionFound == YES) {
         return;
     }
-    
-    [self placePiecesInStartPositions];
     
     NSArray *tileNames = @[@"F", @"I", @"L", @"N", @"P", @"T", @"U", @"V", @"W", @"X", @"Y", @"Z"];
     
@@ -136,13 +135,12 @@
 - (BOOL)useWidthOfScreenForRightBound {
     UIDevice *device = [UIDevice currentDevice];
     UIDeviceOrientation orientation = [device orientation];
-    return UIDeviceOrientationIsPortrait(orientation) || orientation == UIDeviceOrientationUnknown;
+    return orientation == UIDeviceOrientationUnknown || UIDeviceOrientationIsPortrait(orientation);
 }
 
 - (void)placePiecesInStartPositions {
     CGFloat rightBoundValue = [self useWidthOfScreenForRightBound] ? self.view.frame.size.width : self.view.frame.size.height;
-    CGRect bounds = [[UIScreen mainScreen] bounds];
-    CGFloat rightBound = bounds.origin.x + rightBoundValue - kPlayingPieceRightBoundPadding;
+    CGFloat rightBound = self.view.frame.origin.x + rightBoundValue - kPlayingPieceRightBoundPadding;
     CGFloat lowerBound = self.board.frame.origin.y + self.board.frame.size.height;
 
     CGPoint currentOrigin =
@@ -158,7 +156,6 @@
             playingPiece.frame =
                 CGRectMake(currentOrigin.x, currentOrigin.y, playingPiece.frame.size.width, playingPiece.frame.size.height);
             [self.view addSubview:playingPiece];
-            
         }];
         
         currentOrigin = [self.model nextPieceStartLocation:currentOrigin forPieceWithSize:playingPiece.frame.size usingRightBound:rightBound];
@@ -221,7 +218,6 @@
                 [UIView animateWithDuration:kPieceSnapAnimationDuration animations:^{
                     playingPiece.frame = CGRectMake(newOrigin.x, newOrigin.y, playingPiece.frame.size.width, playingPiece.frame.size.height);
                 }];
-                
             } else {
                 newSuperView = self.view;
                 newOrigin = [playingPiece.superview convertPoint:playingPiece.frame.origin toView:newSuperView];
