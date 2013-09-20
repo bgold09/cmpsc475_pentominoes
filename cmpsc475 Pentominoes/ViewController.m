@@ -18,6 +18,7 @@
 #define kPlayingPieceRightBoundPadding         250
 #define kBoardSquareSideLength                 30.0
 #define kAnimationDuration                     1.0
+#define kPieceSnapAnimationDuration            0.3
 
 @interface ViewController () <InfoDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *board;
@@ -77,9 +78,6 @@
 }
 
 - (IBAction)SolvePressed:(UIButton *)sender {
-    if (self.model.solutionFound == NO) {
-        [self placePiecesInStartPositions];
-    }
     [self solveBoard];
 }
 
@@ -97,6 +95,8 @@
     if (self.model.solutionFound == YES) {
         return;
     }
+    
+    [self placePiecesInStartPositions];
     
     NSArray *tileNames = @[@"F", @"I", @"L", @"N", @"P", @"T", @"U", @"V", @"W", @"X", @"Y", @"Z"];
     
@@ -133,17 +133,6 @@
     [self placePiecesInStartPositions];
 }
 
-- (CGAffineTransform)rotatePlayingPiece:(CGAffineTransform)transform numberOfRotations:(CGFloat)numberOfRotations {
-    return CGAffineTransformRotate(transform, M_PI_2 * numberOfRotations);
-}
-
-- (CGAffineTransform)flipPlayingPiece:(CGAffineTransform)transform numberOfFlips:(NSInteger)numberOfFlips {
-    if (numberOfFlips == 1) {
-        return CGAffineTransformScale(transform, -1.0, 1.0);
-    }
-    return transform;
-}
-
 - (BOOL)useWidthOfScreenForRightBound {
     UIDevice *device = [UIDevice currentDevice];
     UIDeviceOrientation orientation = [device orientation];
@@ -174,6 +163,8 @@
         
         currentOrigin = [self.model nextPieceStartLocation:currentOrigin forPieceWithSize:playingPiece.frame.size usingRightBound:rightBound];
     }
+    
+    self.model.solutionFound = NO;
 }
 
 #pragma mark - Gestures
@@ -209,7 +200,7 @@
             break;
         case UIGestureRecognizerStateChanged:
         {
-            playingPiece.center = [recognizer locationInView:playingPiece.superview];
+            playingPiece.center = [recognizer locationInView:playingPiece.superview];            
             break;
         }
         case UIGestureRecognizerStateEnded:
@@ -222,15 +213,18 @@
             if (CGRectContainsPoint(self.board.frame, playingPieceOrigin) ||
                     CGRectContainsPoint(self.board.frame, CGPointMake(playingPieceOrigin.x + playingPiece.frame.size.width,
                                                                       playingPieceOrigin.y + playingPiece.frame.size.height))) {
-                
                 newSuperView = self.board;
                 newOrigin = [playingPiece.superview convertPoint:playingPiece.frame.origin toView:newSuperView];
                 playingPiece.frame = CGRectMake(newOrigin.x, newOrigin.y, playingPiece.frame.size.width, playingPiece.frame.size.height);
                 newOrigin = [self snapPieceToBoard:newOrigin];
-                playingPiece.frame = CGRectMake(newOrigin.x, newOrigin.y, playingPiece.frame.size.width, playingPiece.frame.size.height);
+                
+                [UIView animateWithDuration:kPieceSnapAnimationDuration animations:^{
+                    playingPiece.frame = CGRectMake(newOrigin.x, newOrigin.y, playingPiece.frame.size.width, playingPiece.frame.size.height);
+                }];
+                
             } else {
                 newSuperView = self.view;
-                newOrigin = [playingPiece.superview convertPoint:playingPiece.frame.origin fromView:newSuperView];
+                newOrigin = [playingPiece.superview convertPoint:playingPiece.frame.origin toView:newSuperView];
                 playingPiece.frame = CGRectMake(newOrigin.x, newOrigin.y, playingPiece.frame.size.width, playingPiece.frame.size.height);
             }
             
@@ -243,6 +237,8 @@
         default:
             break;
     }
+    
+    self.model.solutionFound = NO;
 }
 
 - (CGPoint)snapPieceToBoard:(CGPoint)currentOrigin {
