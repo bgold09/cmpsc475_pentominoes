@@ -129,9 +129,8 @@
 }
 
 - (BOOL)useWidthOfScreenForRightBound {
-    UIDevice *device = [UIDevice currentDevice];
-    UIDeviceOrientation orientation = [device orientation];
-    return orientation == UIDeviceOrientationUnknown || UIDeviceOrientationIsPortrait(orientation);
+    UIInterfaceOrientation interfaceOrientation = self.interfaceOrientation;
+    return UIInterfaceOrientationIsPortrait(interfaceOrientation);
 }
 
 - (CGPoint)nextPieceStartLocation:(CGPoint)currentOrigin forPieceWithSize:(CGSize)size usingRightBound:(CGFloat)rightBound {
