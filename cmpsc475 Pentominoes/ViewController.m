@@ -44,6 +44,9 @@
 
 - (void)dealloc {
     [_model release];
+    [_board release];
+    [_boardImages release];
+    [_playingPieces release];
     [super dealloc];
 }
 
