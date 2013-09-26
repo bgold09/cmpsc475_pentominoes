@@ -78,7 +78,7 @@
 }
 
 - (IBAction)SolvePressed:(UIButton *)sender {
-    [self placePiecesInStartPositions];
+    //[self placePiecesInStartPositions];
     [self solveBoard];
 }
 
@@ -99,7 +99,7 @@
     
     for (PlayingPiece *playingPiece in self.playingPieces) {
         CGPoint solutionRelativeOrigin = [self.model solutionLocationForPiece:playingPiece];
-        CGPoint newOrigin = [self.view convertPoint:playingPiece.frame.origin toView:self.board];
+        CGPoint newOrigin = [playingPiece.superview convertPoint:playingPiece.frame.origin toView:self.board];
         CGRect newFrame = CGRectMake(newOrigin.x, newOrigin.y, playingPiece.frame.size.width, playingPiece.frame.size.height);
         NSInteger pieceRotations = [self.model numberOfRotationsForPiece:playingPiece];
         NSInteger pieceFlips = [self.model numberOfFlipsForPiece:playingPiece];
