@@ -38,7 +38,7 @@ static NSString *kSolutionsFileExtention = @"plist";
     self = [super init];
     if (self) {
         _solutions = [self loadSolutions];
-        _boardImages = [self createBoardImages];
+        _boardImages = [self allBoardImages];
     }
     return self;
 }
@@ -50,20 +50,22 @@ static NSString *kSolutionsFileExtention = @"plist";
     return YES;
 }
 
-- (CGPoint)pieceSolutionLocation:(NSString *)tileName {
+- (CGPoint)solutionLocationForPiece:(PlayingPiece *)playingPiece {
+    NSString *tileName = playingPiece.tileName;
     NSDictionary *solutionDictionary = self.solutions[self.currentBoardNumber - 1];
     NSDictionary *pieceSolution = [solutionDictionary objectForKey:tileName];
     NSNumber *piecePositionX = (NSNumber *) [pieceSolution objectForKey:@"x"];
     NSNumber *piecePositionY = (NSNumber *) [pieceSolution objectForKey:@"y"];
     
     CGPoint solutionRelativeOrigin =
-        CGPointMake([piecePositionX floatValue] * kBoardSquareSideLength,
-                    [piecePositionY floatValue] * kBoardSquareSideLength);
+    CGPointMake([piecePositionX floatValue] * kBoardSquareSideLength,
+                [piecePositionY floatValue] * kBoardSquareSideLength);
     
     return solutionRelativeOrigin;
 }
 
-- (NSInteger)numberOfRotationsForPiece:(NSString *)tileName {
+- (NSInteger)numberOfRotationsForPiece:(PlayingPiece *)playingPiece {
+    NSString *tileName = playingPiece.tileName;
     NSDictionary *solutionDictionary = self.solutions[self.currentBoardNumber - 1];
     NSDictionary *pieceSolution = [solutionDictionary objectForKey:tileName];
     NSNumber *pieceRotations = (NSNumber *) [pieceSolution objectForKey:@"rotations"];
@@ -71,24 +73,13 @@ static NSString *kSolutionsFileExtention = @"plist";
     return [pieceRotations floatValue];
 }
 
-- (NSInteger)numberOfFlipsForPiece:(NSString *)tileName {
+- (NSInteger)numberOfFlipsForPiece:(PlayingPiece *)playingPiece {
+    NSString *tileName = playingPiece.tileName;
     NSDictionary *solutionDictionary = self.solutions[self.currentBoardNumber - 1];
     NSDictionary *pieceSolution = [solutionDictionary objectForKey:tileName];
     NSNumber *pieceFlips = (NSNumber *) [pieceSolution objectForKey:@"flips"];
     
     return [pieceFlips floatValue];
-}
-
-- (CGPoint)nextPieceStartLocation:(CGPoint)currentOrigin forPieceWithSize:(CGSize)size usingRightBound:(CGFloat)rightBound {
-    if (currentOrigin.x + size.width > rightBound) {
-        currentOrigin.x = kPlayingPieceInitialHorizontalPosition;
-        currentOrigin.y += kPlayingPieceVerticalPadding;
-    } else {
-        currentOrigin.x += size.width + kPlayingPieceHorizontalPadding;
-    }
-    
-    self.solutionFound = NO;
-    return currentOrigin;
 }
 
 - (UIImage *)switchToBoard:(NSInteger)boardNumber {
@@ -97,7 +88,7 @@ static NSString *kSolutionsFileExtention = @"plist";
     return self.boardImages[boardNumber];
 }
 
-- (NSArray *)createBoardImages {
+- (NSArray *)allBoardImages {
     NSMutableArray *newBoardImages = [[NSMutableArray alloc] init];
     for (NSInteger boardImageNumber = 0; boardImageNumber < kNumberBoardImages; boardImageNumber++) {
         NSString *boardImageFileName = [[NSString alloc] initWithFormat:@"%@%d.%@", kBoardImagePrefix, boardImageNumber, kBoardImageFileExtension];
@@ -108,7 +99,7 @@ static NSString *kSolutionsFileExtention = @"plist";
     return newBoardImages;
 }
 
-- (NSArray *)createPlayingPieceImageViews {
+- (NSArray *)allPlayingPieces {
     NSArray *tileNames = @[@"F", @"I", @"L", @"N", @"P", @"T", @"U", @"V", @"W", @"X", @"Y", @"Z"];
     NSMutableArray *playingPieces = [[NSMutableArray alloc] init];
     

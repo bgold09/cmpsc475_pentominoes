@@ -26,7 +26,7 @@
 // An empty implementation adversely affects performance during animation.
 - (void)drawRect:(CGRect)rect
 {
-    // Drawing code
+// Drawing code
 }
 */
 
@@ -39,9 +39,16 @@
 }
 
 - (void)rotateImage:(NSInteger)numberOfRotations {
-    [UIView animateWithDuration:kAnimationDuration animations:^{
-        self.transform = CGAffineTransformRotate(self.transform, M_PI_2 * numberOfRotations);
-    }];
+    if (self.pieceIsFlipped) {
+        [UIView animateWithDuration:kAnimationDuration animations:^{
+            self.transform = CGAffineTransformRotate(self.transform, -1.0 * M_PI_2 * numberOfRotations);
+        }];
+    } else {
+        [UIView animateWithDuration:kAnimationDuration animations:^{
+            self.transform = CGAffineTransformRotate(self.transform, M_PI_2 * numberOfRotations);
+        }];
+    }
+    
     self.currentRotations = (self.currentRotations + numberOfRotations) % 4;
 }
 

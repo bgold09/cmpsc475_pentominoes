@@ -7,16 +7,16 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "PlayingPiece.h"
 
 @interface Model : NSObject
 
 @property BOOL solutionFound;
-- (CGPoint)nextPieceStartLocation:(CGPoint)currentOrigin forPieceWithSize:(CGSize)size usingRightBound:(CGFloat)rightBound;
-- (CGPoint)pieceSolutionLocation:(NSString *)tileName;
-- (NSInteger)numberOfRotationsForPiece:(NSString *)tileName;
-- (NSInteger)numberOfFlipsForPiece:(NSString *)tileName;
+- (CGPoint)solutionLocationForPiece:(PlayingPiece *)playingPiece;
+- (NSInteger)numberOfRotationsForPiece:(PlayingPiece *)playingPiece;
+- (NSInteger)numberOfFlipsForPiece:(PlayingPiece *)playingPiece;
 - (UIImage *)switchToBoard:(NSInteger)boardNumber;
 - (BOOL)solutionExists;
-- (NSArray *)createBoardImages;
-- (NSArray *)createPlayingPieceImageViews;
+- (NSArray *)allBoardImages;
+- (NSArray *)allPlayingPieces;
 @end

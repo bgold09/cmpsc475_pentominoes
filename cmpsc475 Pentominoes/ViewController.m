@@ -23,7 +23,7 @@
 @interface ViewController () <InfoDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *board;
 @property (strong, nonatomic) NSArray *boardImages;
-@property (strong, nonatomic) NSArray *playingPieceImageViews;
+@property (strong, nonatomic) NSArray *playingPieces;
 @property (strong, nonatomic) Model *model;
 - (IBAction)BoardButtonPressed:(UIButton *)sender;
 - (IBAction)ResetPressed:(UIButton *)sender;
@@ -45,8 +45,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    _boardImages = [self.model createBoardImages];
-    _playingPieceImageViews = [self.model createPlayingPieceImageViews];
+    _boardImages = [self.model allBoardImages];
+    _playingPieces = [self.model allPlayingPieces];
     [self registerGestureRecognizersOnPlayingPieces];
 	// Do any additional setup after loading the view, typically from a nib.
 }
@@ -97,29 +97,25 @@
         return;
     }
     
-    NSArray *tileNames = @[@"F", @"I", @"L", @"N", @"P", @"T", @"U", @"V", @"W", @"X", @"Y", @"Z"];
-    
-    for (NSInteger i = 0; i < [tileNames count]; i++) {
-        NSString *tileName = tileNames[i];
-        CGPoint solutionRelativeOrigin = [self.model pieceSolutionLocation:tileName];
-        PlayingPiece *playingPiece = self.playingPieceImageViews[i];
+    for (PlayingPiece *playingPiece in self.playingPieces) {
+        CGPoint solutionRelativeOrigin = [self.model solutionLocationForPiece:playingPiece];
         CGPoint newOrigin = [self.view convertPoint:playingPiece.frame.origin toView:self.board];
         CGRect newFrame = CGRectMake(newOrigin.x, newOrigin.y, playingPiece.frame.size.width, playingPiece.frame.size.height);
-        NSInteger pieceRotations = [self.model numberOfRotationsForPiece:tileName];
-        NSInteger pieceFlips = [self.model numberOfFlipsForPiece:tileName];
+        NSInteger pieceRotations = [self.model numberOfRotationsForPiece:playingPiece];
+        NSInteger pieceFlips = [self.model numberOfFlipsForPiece:playingPiece];
         
         [UIView animateWithDuration:kAnimationDuration animations:^{
             playingPiece.frame = newFrame;
             [self.board addSubview:playingPiece];
-                             
+            
             [playingPiece rotateImage:pieceRotations];
             if (pieceFlips > 0) {
                 [playingPiece flipImage];
             }
-                             
+            
             playingPiece.frame =
-                CGRectMake(solutionRelativeOrigin.x, solutionRelativeOrigin.y,
-                           playingPiece.frame.size.width, playingPiece.frame.size.height);
+            CGRectMake(solutionRelativeOrigin.x, solutionRelativeOrigin.y,
+                       playingPiece.frame.size.width, playingPiece.frame.size.height);
         }];
     }
     
@@ -138,27 +134,38 @@
     return orientation == UIDeviceOrientationUnknown || UIDeviceOrientationIsPortrait(orientation);
 }
 
+- (CGPoint)nextPieceStartLocation:(CGPoint)currentOrigin forPieceWithSize:(CGSize)size usingRightBound:(CGFloat)rightBound {
+    if (currentOrigin.x + size.width > rightBound) {
+        currentOrigin.x = kPlayingPieceInitialHorizontalPosition;
+        currentOrigin.y += kPlayingPieceVerticalPadding;
+    } else {
+        currentOrigin.x += size.width + kPlayingPieceHorizontalPadding;
+    }
+    
+    return currentOrigin;
+}
+
 - (void)placePiecesInStartPositions {
     CGFloat rightBoundValue = [self useWidthOfScreenForRightBound] ? self.view.frame.size.width : self.view.frame.size.height;
     CGFloat rightBound = self.view.frame.origin.x + rightBoundValue - kPlayingPieceRightBoundPadding;
     CGFloat lowerBound = self.board.frame.origin.y + self.board.frame.size.height;
-
-    CGPoint currentOrigin =
-        CGPointMake(kPlayingPieceInitialHorizontalPosition,
-                    lowerBound + kPlayingPieceInitialVerticalPadding);
     
-    for (UIImageView *playingPiece in self.playingPieceImageViews) {
+    CGPoint currentOrigin =
+    CGPointMake(kPlayingPieceInitialHorizontalPosition,
+                lowerBound + kPlayingPieceInitialVerticalPadding);
+    
+    for (PlayingPiece *playingPiece in self.playingPieces) {
         [UIView animateWithDuration:kAnimationDuration animations:^{
             playingPiece.transform = CGAffineTransformIdentity;
             CGPoint origin = [playingPiece.superview convertPoint:playingPiece.frame.origin toView:self.view];
             CGRect currentFrame = CGRectMake(origin.x, origin.y, playingPiece.frame.size.width, playingPiece.frame.size.height);
             playingPiece.frame = currentFrame;
             playingPiece.frame =
-                CGRectMake(currentOrigin.x, currentOrigin.y, playingPiece.frame.size.width, playingPiece.frame.size.height);
+            CGRectMake(currentOrigin.x, currentOrigin.y, playingPiece.frame.size.width, playingPiece.frame.size.height);
             [self.view addSubview:playingPiece];
         }];
         
-        currentOrigin = [self.model nextPieceStartLocation:currentOrigin forPieceWithSize:playingPiece.frame.size usingRightBound:rightBound];
+        currentOrigin = [self nextPieceStartLocation:currentOrigin forPieceWithSize:playingPiece.frame.size usingRightBound:rightBound];
     }
     
     self.model.solutionFound = NO;
@@ -167,7 +174,7 @@
 #pragma mark - Gestures
 
 - (void)registerGestureRecognizersOnPlayingPieces {
-    for (PlayingPiece *playingPiece in self.playingPieceImageViews) {
+    for (PlayingPiece *playingPiece in self.playingPieces) {
         UITapGestureRecognizer *singleTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
         UITapGestureRecognizer *doubleTapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
         UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
@@ -197,7 +204,7 @@
             break;
         case UIGestureRecognizerStateChanged:
         {
-            playingPiece.center = [recognizer locationInView:playingPiece.superview];            
+            playingPiece.center = [recognizer locationInView:playingPiece.superview];
             break;
         }
         case UIGestureRecognizerStateEnded:
@@ -208,8 +215,8 @@
             CGPoint newOrigin;
             
             if (CGRectContainsPoint(self.board.frame, playingPieceOrigin) ||
-                    CGRectContainsPoint(self.board.frame, CGPointMake(playingPieceOrigin.x + playingPiece.frame.size.width,
-                                                                      playingPieceOrigin.y + playingPiece.frame.size.height))) {
+                CGRectContainsPoint(self.board.frame, CGPointMake(playingPieceOrigin.x + playingPiece.frame.size.width,
+                                                                  playingPieceOrigin.y + playingPiece.frame.size.height))) {
                 newSuperView = self.board;
                 newOrigin = [playingPiece.superview convertPoint:playingPiece.frame.origin toView:newSuperView];
                 playingPiece.frame = CGRectMake(newOrigin.x, newOrigin.y, playingPiece.frame.size.width, playingPiece.frame.size.height);
@@ -239,8 +246,8 @@
 
 - (CGPoint)snapPieceToBoard:(CGPoint)currentOrigin {
     CGPoint point =
-        CGPointMake(kBoardSquareSideLength * floorf((currentOrigin.x/kBoardSquareSideLength) + 0.5),
-                    kBoardSquareSideLength * floorf((currentOrigin.y / kBoardSquareSideLength) + 0.5));
+    CGPointMake(kBoardSquareSideLength * floorf((currentOrigin.x/kBoardSquareSideLength) + 0.5),
+                kBoardSquareSideLength * floorf((currentOrigin.y / kBoardSquareSideLength) + 0.5));
     
     return point;
 }
