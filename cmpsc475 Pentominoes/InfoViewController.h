@@ -15,6 +15,6 @@
 @end
 
 @interface InfoViewController : UIViewController
-@property (nonatomic, weak) id<InfoDelegate> delegate;
+@property (nonatomic, assign) id<InfoDelegate> delegate;
 
 @end

@@ -37,10 +37,16 @@ static NSString *kSolutionsFileExtention = @"plist";
 - (id)init {
     self = [super init];
     if (self) {
-        _solutions = [self loadSolutions];
-        _boardImages = [self allBoardImages];
+        _solutions = [[self allSolutions] retain];
+        _boardImages = [[self allBoardImages] retain];
     }
     return self;
+}
+
+- (void)dealloc {
+    [_solutions release];
+    [_boardImages release];
+    [super dealloc];
 }
 
 - (BOOL)solutionExists {
@@ -93,9 +99,11 @@ static NSString *kSolutionsFileExtention = @"plist";
     for (NSInteger boardImageNumber = 0; boardImageNumber < kNumberBoardImages; boardImageNumber++) {
         NSString *boardImageFileName = [[NSString alloc] initWithFormat:@"%@%d.%@", kBoardImagePrefix, boardImageNumber, kBoardImageFileExtension];
         UIImage *boardImage = [UIImage imageNamed:boardImageFileName];
+        [boardImageFileName release];
         [newBoardImages addObject:boardImage];
     }
     
+    [newBoardImages autorelease];
     return newBoardImages;
 }
 
@@ -106,6 +114,7 @@ static NSString *kSolutionsFileExtention = @"plist";
     for (NSString *tileName in tileNames) {
         NSString *playingPieceImageFileName = [[NSString alloc] initWithFormat:@"%@%@.%@", kPlayingPieceImagePrefix, tileName, kPlayingPieceImageFileExtension];
         UIImage *playingPieceImage = [UIImage imageNamed:playingPieceImageFileName];
+        [playingPieceImageFileName release];
         PlayingPiece *playingPiece = [[PlayingPiece alloc] initWithImage:playingPieceImage andTileName:tileName];
         
         CGRect frame = CGRectMake(0.0, 0.0, playingPieceImage.size.width / 2, playingPieceImage.size.height / 2);
@@ -114,13 +123,15 @@ static NSString *kSolutionsFileExtention = @"plist";
         [playingPieces addObject:playingPiece];
     }
     
+    [playingPieces autorelease];
     return playingPieces;
 }
 
-- (NSArray *)loadSolutions {
+- (NSArray *)allSolutions {
     NSString *solutionsFilePath = [[NSBundle mainBundle] pathForResource:kSolutionsFileName ofType:kSolutionsFileExtention];
-    NSMutableArray *array = [[NSMutableArray alloc] initWithContentsOfFile:solutionsFilePath];
-    return array;
+    NSMutableArray *solutions = [[NSMutableArray alloc] initWithContentsOfFile:solutionsFilePath];
+    [solutions autorelease];
+    return solutions;
 }
 
 @end

@@ -21,10 +21,10 @@
 #define kPieceSnapAnimationDuration            0.3
 
 @interface ViewController () <InfoDelegate>
-@property (weak, nonatomic) IBOutlet UIImageView *board;
-@property (strong, nonatomic) NSArray *boardImages;
-@property (strong, nonatomic) NSArray *playingPieces;
-@property (strong, nonatomic) Model *model;
+@property (retain, nonatomic) IBOutlet UIImageView *board;
+@property (retain, nonatomic) NSArray *boardImages;
+@property (retain, nonatomic) NSArray *playingPieces;
+@property (retain, nonatomic) Model *model;
 - (IBAction)BoardButtonPressed:(UIButton *)sender;
 - (IBAction)ResetPressed:(UIButton *)sender;
 - (IBAction)SolvePressed:(UIButton *)sender;
@@ -42,11 +42,16 @@
     return self;
 }
 
+- (void)dealloc {
+    [_model release];
+    [super dealloc];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    _boardImages = [self.model allBoardImages];
-    _playingPieces = [self.model allPlayingPieces];
+    _boardImages = [[self.model allBoardImages] retain];
+    _playingPieces = [[self.model allPlayingPieces] retain];
     [self registerGestureRecognizersOnPlayingPieces];
 	// Do any additional setup after loading the view, typically from a nib.
 }
@@ -78,7 +83,6 @@
 }
 
 - (IBAction)SolvePressed:(UIButton *)sender {
-    //[self placePiecesInStartPositions];
     [self solveBoard];
 }
 
@@ -90,6 +94,7 @@
                                               cancelButtonTitle:@"OK"
                                               otherButtonTitles:nil];
         [alert show];
+        [alert release];
         return;
     }
     

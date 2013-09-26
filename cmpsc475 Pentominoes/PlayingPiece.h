@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @interface PlayingPiece : UIImageView
-@property NSString *tileName;
+@property (retain, nonatomic) NSString *tileName;
 @property NSInteger currentRotations;
 @property BOOL pieceIsFlipped;
 - (id)initWithImage:(UIImage *)image andTileName:(NSString *)tileName;

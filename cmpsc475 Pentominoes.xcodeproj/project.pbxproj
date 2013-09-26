@@ -404,6 +404,7 @@
 		C83E3ACD17DE929D0028DF1B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "cmpsc475 Pentominoes/cmpsc475 Pentominoes-Prefix.pch";
 				INFOPLIST_FILE = "cmpsc475 Pentominoes/cmpsc475 Pentominoes-Info.plist";
@@ -415,6 +416,7 @@
 		C83E3ACE17DE929D0028DF1B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "cmpsc475 Pentominoes/cmpsc475 Pentominoes-Prefix.pch";
 				INFOPLIST_FILE = "cmpsc475 Pentominoes/cmpsc475 Pentominoes-Info.plist";
