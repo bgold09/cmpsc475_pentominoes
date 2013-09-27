@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		C800C69517EBCCC60066A398 /* InfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C800C69417EBCCC60066A398 /* InfoViewController.m */; };
+		C83A4AC117F4FFEE00C70F07 /* check-mark.png in Resources */ = {isa = PBXBuildFile; fileRef = C83A4AC017F4FFEE00C70F07 /* check-mark.png */; };
 		C83E3AAD17DE929D0028DF1B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C83E3AAC17DE929D0028DF1B /* UIKit.framework */; };
 		C83E3AAF17DE929D0028DF1B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C83E3AAE17DE929D0028DF1B /* Foundation.framework */; };
 		C83E3AB117DE929D0028DF1B /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C83E3AB017DE929D0028DF1B /* CoreGraphics.framework */; };
@@ -55,6 +56,7 @@
 /* Begin PBXFileReference section */
 		C800C69317EBCCC60066A398 /* InfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfoViewController.h; sourceTree = "<group>"; };
 		C800C69417EBCCC60066A398 /* InfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfoViewController.m; sourceTree = "<group>"; };
+		C83A4AC017F4FFEE00C70F07 /* check-mark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "check-mark.png"; sourceTree = "<group>"; };
 		C83E3AA917DE929D0028DF1B /* cmpsc475 Pentominoes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "cmpsc475 Pentominoes.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C83E3AAC17DE929D0028DF1B /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		C83E3AAE17DE929D0028DF1B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -173,6 +175,7 @@
 		C83E3AB317DE929D0028DF1B /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				C83A4AC017F4FFEE00C70F07 /* check-mark.png */,
 				C83E3ACF17DE92CB0028DF1B /* Pentominoes Assets */,
 				C83E3AB417DE929D0028DF1B /* cmpsc475 Pentominoes-Info.plist */,
 				C83E3AB517DE929D0028DF1B /* InfoPlist.strings */,
@@ -302,6 +305,7 @@
 				C8CE8EB917E2A8A900036E7B /* icon.png in Resources */,
 				C8CE8EC317E2AA2300036E7B /* Default-Portrait@2x~ipad.png in Resources */,
 				C8CE8EC517E2AA2700036E7B /* Default-Portrait~ipad.png in Resources */,
+				C83A4AC117F4FFEE00C70F07 /* check-mark.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

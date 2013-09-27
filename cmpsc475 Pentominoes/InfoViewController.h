@@ -8,13 +8,16 @@
 
 #import <UIKit/UIKit.h>
 
+@class InfoViewController;
+
 @protocol InfoDelegate <NSObject>
 
-- (void)dismissMe;
+- (void)dismissMe:(NSDictionary *)themeColors withThemeNumber:(NSInteger)themeNumber;
 
 @end
 
 @interface InfoViewController : UIViewController
 @property (nonatomic, assign) id<InfoDelegate> delegate;
+@property NSInteger themeNumber;
 
 @end

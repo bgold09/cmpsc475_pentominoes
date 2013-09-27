@@ -25,6 +25,9 @@
 @property (retain, nonatomic) NSArray *boardImages;
 @property (retain, nonatomic) NSArray *playingPieces;
 @property (retain, nonatomic) Model *model;
+@property NSInteger themeNumber;
+@property (retain, nonatomic) IBOutlet UIButton *resetButton;
+@property (retain, nonatomic) IBOutlet UIButton *solveButton;
 - (IBAction)BoardButtonPressed:(UIButton *)sender;
 - (IBAction)ResetPressed:(UIButton *)sender;
 - (IBAction)SolvePressed:(UIButton *)sender;
@@ -38,6 +41,8 @@
     self = [super initWithCoder:aDecoder];
     if (self) {
         _model = [[Model alloc] init];
+        _boardImages = [[self.model allBoardImages] retain];
+        _playingPieces = [[self.model allPlayingPieces] retain];
     }
     return self;
 }
@@ -47,14 +52,14 @@
     [_board release];
     [_boardImages release];
     [_playingPieces release];
+    [_resetButton release];
+    [_solveButton release];
     [super dealloc];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    _boardImages = [[self.model allBoardImages] retain];
-    _playingPieces = [[self.model allPlayingPieces] retain];
     [self registerGestureRecognizersOnPlayingPieces];
 	// Do any additional setup after loading the view, typically from a nib.
 }
@@ -253,7 +258,7 @@
 
 - (CGPoint)snapPieceToBoard:(CGPoint)currentOrigin {
     CGPoint point =
-    CGPointMake(kBoardSquareSideLength * floorf((currentOrigin.x/kBoardSquareSideLength) + 0.5),
+    CGPointMake(kBoardSquareSideLength * floorf((currentOrigin.x / kBoardSquareSideLength) + 0.5),
                 kBoardSquareSideLength * floorf((currentOrigin.y / kBoardSquareSideLength) + 0.5));
     
     return point;
@@ -261,8 +266,18 @@
 
 #pragma mark - Info Delegate
 
-- (void)dismissMe {
-    [self dismissViewControllerAnimated:YES completion:NULL];
+- (void)dismissMe:(NSDictionary *)themeColors withThemeNumber:(NSInteger)themeNumber {    
+    UIColor *backgroundColor = (UIColor *) [themeColors objectForKey:@"background-color"];
+    UIColor *textColor = (UIColor *) [themeColors objectForKey:@"text-color"];
+    
+    self.themeNumber = themeNumber;
+    [self.view setBackgroundColor:backgroundColor];
+    [self.solveButton setTitleColor:textColor forState:UIControlStateNormal];
+    [self.solveButton setTitleColor:textColor forState:UIControlStateSelected];
+    [self.solveButton setTitleColor:textColor forState:UIControlStateHighlighted];
+    [self.resetButton setTitleColor:textColor forState:UIControlStateNormal];
+    [self.resetButton setTitleColor:textColor forState:UIControlStateSelected];
+    [self.resetButton setTitleColor:textColor forState:UIControlStateHighlighted];
 }
 
 #pragma mark - Segues
@@ -270,6 +285,7 @@
     if ([segue.identifier isEqualToString:@"InfoSegue"]) {
         InfoViewController *infoViewController = segue.destinationViewController;
         infoViewController.delegate = self;
+        infoViewController.themeNumber = self.themeNumber;
     }
 }
 

@@ -17,6 +17,8 @@
 - (NSInteger)numberOfFlipsForPiece:(PlayingPiece *)playingPiece;
 - (UIImage *)switchToBoard:(NSInteger)boardNumber;
 - (BOOL)solutionExists;
+- (UIColor *)textColorForTheme:(NSInteger)themeNumber;
 - (NSArray *)allBoardImages;
 - (NSArray *)allPlayingPieces;
+- (NSArray *)allTextColors;
 @end

@@ -17,10 +17,12 @@
 #define kPlayingPieceRightBoundPadding         75
 #define kBoardSquareSideLength                 30.0
 #define kAnimationDuration                     1.0
+#define kNumberOfThemes                        3
 
 @interface Model ()
-@property (strong, nonatomic) NSArray *boardImages;
-@property (strong, nonatomic) NSArray *solutions;
+@property (retain, nonatomic) NSArray *boardImages;
+@property (retain, nonatomic) NSArray *solutions;
+@property (retain, nonatomic) NSArray *textColors;
 @property NSInteger currentBoardNumber;
 
 @end
@@ -39,6 +41,7 @@ static NSString *kSolutionsFileExtention = @"plist";
     if (self) {
         _solutions = [[self allSolutions] retain];
         _boardImages = [[self allBoardImages] retain];
+        _textColors = [[self allTextColors] retain];
     }
     return self;
 }
@@ -46,6 +49,7 @@ static NSString *kSolutionsFileExtention = @"plist";
 - (void)dealloc {
     [_solutions release];
     [_boardImages release];
+    [_textColors release];
     [super dealloc];
 }
 
@@ -94,6 +98,13 @@ static NSString *kSolutionsFileExtention = @"plist";
     return self.boardImages[boardNumber];
 }
 
+- (UIColor *)textColorForTheme:(NSInteger)themeNumber {
+    if (themeNumber >= 0 && themeNumber < kNumberOfThemes) {
+        return [self.textColors objectAtIndex:themeNumber];
+    }
+    return nil;
+}
+
 - (NSArray *)allBoardImages {
     NSMutableArray *newBoardImages = [[NSMutableArray alloc] init];
     for (NSInteger boardImageNumber = 0; boardImageNumber < kNumberBoardImages; boardImageNumber++) {
@@ -121,6 +132,7 @@ static NSString *kSolutionsFileExtention = @"plist";
         playingPiece.frame = frame;
         playingPiece.userInteractionEnabled = YES;
         [playingPieces addObject:playingPiece];
+        [playingPiece release];
     }
     
     [playingPieces autorelease];
@@ -132,6 +144,12 @@ static NSString *kSolutionsFileExtention = @"plist";
     NSMutableArray *solutions = [[NSMutableArray alloc] initWithContentsOfFile:solutionsFilePath];
     [solutions autorelease];
     return solutions;
+}
+
+- (NSArray *)allTextColors {
+    NSMutableArray *themes = [[NSMutableArray alloc] initWithObjects:[UIColor yellowColor], [UIColor whiteColor], [UIColor blackColor], nil];
+    [themes autorelease];
+    return themes;
 }
 
 @end
